@@ -47,102 +47,86 @@ document.addEventListener("DOMContentLoaded", () => {
 
     }
 
-    /* ===============================
-       TYPING ANIMATION
-    =============================== */
+/* ===============================
+   TYPING ANIMATION
+=============================== */
+
+const typingElement = document.getElementById("typing-text");
+
+if (typingElement) {
 
     const phrases = [
+        "Get an Interview",
+        "Get Hired",
+        "Get Promoted",
+        "Land Your Dream Job",
+        "Beat ATS Filters",
+        "Build Your Dream Career"
+    ];
 
-            "Get an Interview",
+    let phraseIndex = 0;
+    let letterIndex = 0;
+    let deleting = false;
 
-            "Get Hired",
+    function typeEffect() {
 
-            "Land Your Dream Job",
+        const current = phrases[phraseIndex];
 
-            "Beat ATS Filters"
+        if (!deleting) {
 
-   ];
+            typingElement.textContent = current.substring(0, letterIndex + 1);
+            letterIndex++;
 
-        let phraseIndex = 0;
-        let letterIndex = 0;
-        let deleting = false;
-
-        function typeEffect() {
-
-            const current = phrases[phraseIndex];
-
-            if (!deleting) {
-
-                typingElement.textContent =
-                    current.substring(0, letterIndex + 1);
-
-                letterIndex++;
-
-                if (letterIndex === current.length) {
-
-                    deleting = true;
-
-                    setTimeout(typeEffect, 1700);
-
-                    return;
-                }
-
-            } else {
-
-                typingElement.textContent =
-                    current.substring(0, letterIndex - 1);
-
-                letterIndex--;
-
-                if (letterIndex === 0) {
-
-                    deleting = false;
-
-                    phraseIndex++;
-
-                    if (phraseIndex >= phrases.length)
-                        phraseIndex = 0;
-                }
-
+            if (letterIndex === current.length) {
+                deleting = true;
+                setTimeout(typeEffect, 1800);
+                return;
             }
 
-            setTimeout(typeEffect, deleting ? 45 : 95);
+        } else {
+
+            typingElement.textContent = current.substring(0, letterIndex - 1);
+            letterIndex--;
+
+            if (letterIndex === 0) {
+                deleting = false;
+                phraseIndex = (phraseIndex + 1) % phrases.length;
+            }
 
         }
 
-        typeEffect();
-
+        setTimeout(typeEffect, deleting ? 45 : 90);
     }
 
-    /* ===============================
-       COUNTER
-    =============================== */
+    typeEffect();
+}
+/* ===============================
+   COUNTER
+=============================== */
 
-    const counter = document.getElementById("resume-counter");
+const counter = document.getElementById("resume-counter");
 
-    if (counter) {
+if (counter) {
 
-        let value = 1000;
+    let count = 1000;
+    const target = 1200;
 
-        const target = 1200;
+    counter.textContent = count;
 
-        const timer = setInterval(() => {
+    const interval = setInterval(() => {
 
-            value += 2;
+        count++;
 
-            counter.textContent = value + "+";
+        if (count >= target) {
+            counter.textContent = target + "+";
+            clearInterval(interval);
+        } else {
+            counter.textContent = count;
+        }
 
-            if (value >= target) {
+    }, 35);
 
-                counter.textContent = target + "+";
-
-                clearInterval(timer);
-
-            }
-
-        }, 18);
-
-    }
+}
 
     /* ===============================
        PHONE VALIDATION

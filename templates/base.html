@@ -1,172 +1,171 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 
-<meta charset="UTF-8">
+    <meta charset="UTF-8">
 
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
-<title>{% block title %}NextHire | Build. Share. Get Hired.{% endblock %}</title>
+    <title>{% block title %}NextHire | Build. Share. Get Hired.{% endblock %}</title>
 
-<meta name="description" content="Create professional ATS-friendly resumes with AI-powered suggestions.">
+    <meta name="description"
+        content="Create professional ATS-friendly resumes with AI-powered suggestions.">
 
-<meta name="theme-color" content="#2563eb">
+    <meta name="theme-color" content="#2563eb">
 
-<link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <!-- Remove this line if you don't have favicon.ico -->
+    <!-- <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}"> -->
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
 
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
 
-<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 
-{% block head %}{% endblock %}
+    {% block head %}{% endblock %}
 
 </head>
 
 <body>
 
-<!-- ===================== NAVBAR ===================== -->
+    <!-- ================= NAVBAR ================= -->
 
-<header>
+    <header>
 
-<a href="{{ url_for('index') }}" class="logo">
-NextHire
-</a>
+        <a href="{{ url_for('index') }}" class="logo">
+            NextHire
+        </a>
 
-<div class="menu-toggle">
-☰
-</div>
+        <div class="menu-toggle">
+            ☰
+        </div>
 
-<nav>
+        <nav>
 
-<a href="{{ url_for('builder') }}">
-Create Resume
-</a>
+            <a href="{{ url_for('builder') }}">
+                Create Resume
+            </a>
 
-<a href="{{ url_for('ats_checker') }}">
-ATS Checker
-</a>
+            <a href="{{ url_for('ats_checker') }}">
+                ATS Checker
+            </a>
 
-<a href="{{ url_for('ai_suggestions') }}">
-AI Suggestions
-</a>
+            <a href="{{ url_for('ai_suggestions') }}">
+                AI Suggestions
+            </a>
 
-<a href="#"
-style="opacity:.55;cursor:not-allowed;"
-title="Coming Soon">
-LinkedIn Builder
-</a>
+            <a href="#"
+                style="opacity:.55;cursor:not-allowed;"
+                title="Coming Soon">
 
-</nav>
+                LinkedIn Builder
 
-</header>
+            </a>
 
-<!-- ===================== FLASH MESSAGES ===================== -->
+        </nav>
 
-{% with messages = get_flashed_messages() %}
-{% if messages %}
+    </header>
 
-<div class="flash-wrapper">
+    <!-- ================= FLASH ================= -->
 
-{% for message in messages %}
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
 
-<div class="flash-message">
+    <div class="flash-wrapper">
 
-{{ message }}
+        {% for message in messages %}
 
-</div>
+        <div class="flash-message">
 
-{% endfor %}
+            {{ message }}
 
-</div>
+        </div>
 
-{% endif %}
-{% endwith %}
+        {% endfor %}
 
-<!-- ===================== MAIN ===================== -->
+    </div>
 
-<main>
+    {% endif %}
+    {% endwith %}
 
-{% block content %}
-{% endblock %}
+    <!-- ================= MAIN ================= -->
 
-</main>
+    <main>
 
-<!-- ===================== FOOTER ===================== -->
+        {% block content %}
+        {% endblock %}
 
-<footer>
+    </main>
 
-<h3>
+    <!-- ================= FOOTER ================= -->
 
-NextHire
+    <footer>
 
-</h3>
+        <h3>NextHire</h3>
 
-<p>
+        <p>
+            Build. Share. Get Hired.
+        </p>
 
-Build. Share. Get Hired.
+        <div class="footer-contact">
 
-</p>
+            <p>
 
-<div class="footer-contact">
+                📧
 
-<p>
+                <strong>Email:</strong>
 
-📧
-<strong>Email:</strong>
+                <a href="mailto:sudipchakraborty81010@gmail.com">
+                    sudipchakraborty81010@gmail.com
+                </a>
 
-<a href="mailto:sudipchakraborty81010@gmail.com">
+            </p>
 
-sudipchakraborty81010@gmail.com
+            <p>
 
-</a>
+                📱
 
-</p>
+                <strong>Phone:</strong>
 
-<p>
+                <a href="tel:+918101089776">
+                    +91 8101089776
+                </a>
 
-📱
-<strong>Phone:</strong>
+            </p>
 
-<a href="tel:+918101089776">
+            <p>
 
-+91 8101089776
+                👨‍💻
 
-</a>
+                <strong>Developer:</strong>
 
-</p>
+                Sudip Chakraborty
 
-<p>
+            </p>
 
-👨‍💻
-<strong>Developer:</strong>
+        </div>
 
-Sudip Chakraborty
+        <p style="margin-top:30px;font-size:14px;color:#94a3b8;">
 
-</p>
+            © 2026 NextHire. All Rights Reserved.
 
-</div>
+        </p>
 
-<br>
+    </footer>
 
-<p style="font-size:14px;color:#94a3b8;">
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
 
-© {{ 2026 }} NextHire.
-All Rights Reserved.
-
-</p>
-
-</footer>
-
-<script src="{{ url_for('static', filename='script.js') }}"></script>
-
-{% block scripts %}
-{% endblock %}
+    {% block scripts %}
+    {% endblock %}
 
 </body>
+
 </html>
+```

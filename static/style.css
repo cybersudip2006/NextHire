@@ -6,8 +6,8 @@
     .menu-toggle { display: block; }
     
     /* Hide desktop nav */
-    .nav-links {
-        display: none;
+    nav {
+        display: none; /* Changed from .nav-links to nav */
         flex-direction: column;
         width: 100%;
         background: white;
@@ -17,15 +17,16 @@
         text-align: center;
         padding: 20px 0;
         box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        z-index: 999;
     }
 
-    /* Active class for JS toggle */
-    .nav-links.active {
+    /* Active class for JS toggle (Changed from .active to .show) */
+    nav.show {
         display: flex;
     }
 
     /* Stack links vertically */
-    .nav-links a {
+    nav a {
         display: block;
         padding: 15px;
         margin: 0;

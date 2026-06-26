@@ -1,40 +1,172 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NextHire | Build. Share. Get Hired.</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+<title>{% block title %}NextHire | Build. Share. Get Hired.{% endblock %}</title>
+
+<meta name="description" content="Create professional ATS-friendly resumes with AI-powered suggestions.">
+
+<meta name="theme-color" content="#2563eb">
+
+<link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+{% block head %}{% endblock %}
+
 </head>
+
 <body>
-    <header>
-        <a href="/" class="logo">NextHire</a>
-        
-        <!-- Hamburger Icon (Hidden on Desktop) -->
-        <div class="menu-toggle" onclick="toggleMenu()">☰</div>
-        
-        <!-- Nav Links (Managed by CSS for mobile) -->
-        <nav>
-            <a href="/builder">Create Resume</a>
-            <a href="/ats-checker">ATS Checker</a>
-            <a href="/ai-suggestions">AI Suggestions</a>
-            <a href="#" style="opacity: 0.5; cursor: not-allowed;" title="Coming Soon">LinkedIn Builder</a>
-        </nav>
-    </header>
 
-    <main>
-        {% block content %}{% endblock %}
-    </main>
+<!-- ===================== NAVBAR ===================== -->
 
-    <footer>
-        <h3>NextHire</h3>
-        <p style="color: #94a3b8;">Build. Share. Get Hired.</p>
-        <div class="footer-contact">
-            <p><strong>Contact:</strong> Sudip Chakraborty</p>
-            <p><strong>Email:</strong> sudipchakraborty81010@gmail.com</p>
-            <p><strong>Phone:</strong> +91 8101089776</p>
-        </div>
-    </footer>
-    <script src="{{ url_for('static', filename='script.js') }}"></script>
+<header>
+
+<a href="{{ url_for('index') }}" class="logo">
+NextHire
+</a>
+
+<div class="menu-toggle">
+☰
+</div>
+
+<nav>
+
+<a href="{{ url_for('builder') }}">
+Create Resume
+</a>
+
+<a href="{{ url_for('ats_checker') }}">
+ATS Checker
+</a>
+
+<a href="{{ url_for('ai_suggestions') }}">
+AI Suggestions
+</a>
+
+<a href="#"
+style="opacity:.55;cursor:not-allowed;"
+title="Coming Soon">
+LinkedIn Builder
+</a>
+
+</nav>
+
+</header>
+
+<!-- ===================== FLASH MESSAGES ===================== -->
+
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+
+<div class="flash-wrapper">
+
+{% for message in messages %}
+
+<div class="flash-message">
+
+{{ message }}
+
+</div>
+
+{% endfor %}
+
+</div>
+
+{% endif %}
+{% endwith %}
+
+<!-- ===================== MAIN ===================== -->
+
+<main>
+
+{% block content %}
+{% endblock %}
+
+</main>
+
+<!-- ===================== FOOTER ===================== -->
+
+<footer>
+
+<h3>
+
+NextHire
+
+</h3>
+
+<p>
+
+Build. Share. Get Hired.
+
+</p>
+
+<div class="footer-contact">
+
+<p>
+
+📧
+<strong>Email:</strong>
+
+<a href="mailto:sudipchakraborty81010@gmail.com">
+
+sudipchakraborty81010@gmail.com
+
+</a>
+
+</p>
+
+<p>
+
+📱
+<strong>Phone:</strong>
+
+<a href="tel:+918101089776">
+
++91 8101089776
+
+</a>
+
+</p>
+
+<p>
+
+👨‍💻
+<strong>Developer:</strong>
+
+Sudip Chakraborty
+
+</p>
+
+</div>
+
+<br>
+
+<p style="font-size:14px;color:#94a3b8;">
+
+© {{ 2026 }} NextHire.
+All Rights Reserved.
+
+</p>
+
+</footer>
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+
+{% block scripts %}
+{% endblock %}
+
 </body>
 </html>

@@ -100,26 +100,11 @@ def ats_checker():
     return render_template('ats_checker.html', results=results)
 @app.route('/ai-suggestions', methods=['GET', 'POST'])
 def ai_suggestions():
-    suggestions = None
-    if request.method == 'POST':
-        text_input = request.form.get('resume_text')
-        
-        # 1. Fetch the secret key
-        api_key = os.environ.get("GEMINI_API_KEY")
-        
-        # 2. Initialize and configure the real Gemini model
-        import google.generativeai as genai
-        genai.configure(api_key=api_key)
-        
-        model = genai.GenerativeModel('gemini-1.5-flash')
-        prompt = f"Analyze this resume text and provide 3-5 concise, bullet-point suggestions for improvement: {text_input}"
-        
-        response = model.generate_content(prompt)
-        
-        # 3. Clean up the response
-        suggestions = [line.strip('* ').strip('- ') for line in response.text.split('\n') if line.strip()]
-        
-    return render_template('ai_suggestions.html', suggestions=suggestions)
+    try:
+        # ... your existing code ...
+        return render_template('ai_suggestions.html', suggestions=suggestions)
+    except Exception as e:
+        return f"Error: {str(e)}" # This will show you the exact error on your screen!
     
 # --- PDF GENERATOR (No QR Code) ---
 def generate_pdf(name, email, phone, address, objective, form):

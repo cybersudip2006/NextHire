@@ -75,7 +75,7 @@ def ats_checker():
                     import google.generativeai as genai
                     api_key = os.environ.get("GEMINI_API_KEY")
                     genai.configure(api_key=api_key)
-                    model = genai.GenerativeModel('models/gemini-pro')
+                    model = genai.GenerativeModel('models/gemini-2.5-flash')
                     
                     prompt = f"""
                     Act as an expert ATS recruiter. Analyze this resume: {text[:15000]}
@@ -109,7 +109,7 @@ def ai_suggestions():
                 return render_template('ai_suggestions.html', suggestions=["Error: API Key not configured on server."])
 
             genai.configure(api_key=api_key)
-            model = genai.GenerativeModel('models/gemini-pro')
+            model = genai.GenerativeModel('models/gemini-2.5-flash')
             
             prompt = f"Analyze this resume text and provide 3-5 concise, bullet-point suggestions for improvement: {text_input}"
             

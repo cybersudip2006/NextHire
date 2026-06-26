@@ -61,29 +61,38 @@ def ats_checker():
         
         file = request.files['resume_pdf']
         if file.filename != '':
+            # Extract text from PDF
             text = ""
             with pdfplumber.open(file) as pdf:
                 for page in pdf.pages:
                     text += page.extract_text() + "\n"
             
-            # ATS Analysis Logic
-            score = 78
-            missing = ["Project Management", "Agile", "Data Structures"] if "agile" not in text.lower() else []
-            has_email = bool(re.search(r'[\w\.-]+@[\w\.-]+', text))
-            has_phone = bool(re.search(r'\+?\d{10,}', text))
+            # --- GEMINI AI ANALYSIS ---
+            import google.generativeai as genai
+            api_key = os.environ.get("GEMINI_API_KEY")
+            genai.configure(api_key=api_key)
+            model = genai.GenerativeModel('gemini-1.5-flash')
             
+            prompt = f"""
+            Act as an expert ATS (Applicant Tracking System) recruiter. 
+            Analyze the following resume text. Provide:
+            1. An ATS compatibility score (0-100).
+            2. A list of missing keywords for a professional tech role.
+            3. A brief critique of the formatting and content.
+            4. 3 specific, actionable improvements.
+            
+            Resume Text: {text[:15000]} 
+            
+            Format your response clearly so I can display it on a webpage.
+            """
+            
+            response = model.generate_content(prompt)
+            
+            # Here we pass the AI's raw response to the template
             results = {
-                "score": score,
-                "missing": missing,
-                "formatting": "Clean and parsable" if len(text) > 200 else "Unreadable formatting detected",
-                "contact": "Complete" if has_email and has_phone else "Missing Email or Phone",
-                "skills": ["Python", "HTML", "CSS"] if "python" in text.lower() else ["Generic Skills Detected"],
-                "suggestions": [
-                    "Use stronger action verbs (e.g., 'Engineered' instead of 'Made').",
-                    "Quantify your achievements with numbers (e.g., 'Improved efficiency by 20%').",
-                    "Ensure dates follow a consistent MM/YYYY format."
-                ]
+                "ai_feedback": response.text
             }
+            
     return render_template('ats_checker.html', results=results)
 
 @app.route('/ai-suggestions', methods=['GET', 'POST'])

@@ -1,9 +1,8 @@
 // --- Mobile Menu Toggle ---
 function toggleMenu() {
-    const navLinks = document.querySelector('.nav-links');
-    navLinks.classList.toggle('active');
+    const nav = document.querySelector('nav'); // <--- Change to target the <nav> tag
+    nav.classList.toggle('show');              // <--- Change to match the class name in your CSS
 }
-
 // --- Typing Animation Logic ---
 const phrases = ["Get an Interview", "Get Hired", "Get Promoted", "Land Your Dream Job"];
 let currentPhrase = 0; let letterIndex = 0; let isDeleting = false;

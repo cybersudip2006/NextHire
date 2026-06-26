@@ -73,23 +73,23 @@ def ats_checker():
             genai.configure(api_key=api_key)
             model = genai.GenerativeModel('gemini-1.5-flash')
             
-prompt = f"""
-Act as an expert ATS (Applicant Tracking System) recruiter. 
-Analyze the following resume text and provide a comprehensive report.
+          prompt = f"""
+                Act as an expert ATS (Applicant Tracking System) recruiter. 
+                Analyze the following resume text and provide a comprehensive report.
 
-Use Markdown formatting:
-- Use ### for section titles.
-- Use **bold** for key terms or scores.
-- Use - for bullet points.
+                Use Markdown formatting:
+                - Use ### for section titles.
+                - Use **bold** for key terms or scores.
+                - Use - for bullet points.
 
-Please include:
-1. An ATS compatibility score (0-100).
-2. A list of missing keywords for a professional tech role.
-3. A brief critique of the formatting and content.
-4. 3 specific, actionable improvements.
+                Please include:
+                1. An ATS compatibility score (0-100).
+                2. A list of missing keywords for a professional tech role.
+                3. A brief critique of the formatting and content.
+                4. 3 specific, actionable improvements.
 
-Resume Text: {text[:15000]}
-"""
+                Resume Text: {text[:15000]}
+                """
             
             response = model.generate_content(prompt)
             

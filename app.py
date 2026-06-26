@@ -90,13 +90,12 @@ def ats_checker():
 
                 Resume Text: {text[:15000]}
                 """
-            
-            response = model.generate_content(prompt)
+response = model.generate_content(prompt)
             
             # Here we pass the AI's raw response to the template
-            results = {
-                "ai_feedback": response.text
-            }
+    results = {
+          "ai_feedback": response.text
+     }
             
     return render_template('ats_checker.html', results=results)
 

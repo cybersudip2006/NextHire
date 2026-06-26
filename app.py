@@ -92,25 +92,23 @@ def ai_suggestions():
     if request.method == 'POST':
         text_input = request.form.get('resume_text')
         
-        # --- GEMINI API INTEGRATION ---
-        # Uncomment and configure when you add your API Key
-        # import google.generativeai as genai
-        # genai.configure(api_key="YOUR_API_KEY_HERE")
-        # model = genai.GenerativeModel('gemini-1.5-flash')
-        # prompt = f"Analyze this resume text and provide 3-5 concise, bullet-point suggestions for improvement focusing on action verbs, grammar, and skill highlighting: {text_input}"
-        # response = model.generate_content(prompt)
-        # suggestions = response.text.split('\n')
+        # 1. Fetch the secret key
+        api_key = os.environ.get("GEMINI_API_KEY")
         
-        # Mock Response (Formatted as concise bullets)
-        suggestions = [
-            "Replace weak verbs: Change 'helped with' to 'Collaborated on' or 'Spearheaded'.",
-            "Grammar check: Ensure past roles use past tense, and current roles use present tense.",
-            "Project impact: Clearly state what problem your 'NextHire' project solved.",
-            "Skill visibility: Move your technical skills (Flask, Python) closer to the top."
-        ]
+        # 2. Initialize and configure the real Gemini model
+        import google.generativeai as genai
+        genai.configure(api_key=api_key)
+        
+        model = genai.GenerativeModel('gemini-1.5-flash')
+        prompt = f"Analyze this resume text and provide 3-5 concise, bullet-point suggestions for improvement: {text_input}"
+        
+        response = model.generate_content(prompt)
+        
+        # 3. Clean up the response
+        suggestions = [line.strip('* ').strip('- ') for line in response.text.split('\n') if line.strip()]
         
     return render_template('ai_suggestions.html', suggestions=suggestions)
-
+    
 # --- PDF GENERATOR (No QR Code) ---
 def generate_pdf(name, email, phone, address, objective, form):
     buffer = io.BytesIO()

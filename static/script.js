@@ -51,16 +51,17 @@ document.addEventListener("DOMContentLoaded", () => {
        TYPING ANIMATION
     =============================== */
 
-    const typingElement = document.getElementById("typing-text");
+    const phrases = [
 
-    if (typingElement) {
+            "Get an Interview",
 
-        const phrases = [
             "Get Hired",
-            "Build Your Resume",
-            "Beat ATS Systems",
-            "Land Your Dream Job"
-        ];
+
+            "Land Your Dream Job",
+
+            "Beat ATS Filters"
+
+   ];
 
         let phraseIndex = 0;
         let letterIndex = 0;

@@ -1,198 +1,8 @@
 /* ===========================================================
-   NextHire Professional UI
-   Build. Share. Get Hired.
+   HERO SECTION
 =========================================================== */
 
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
-
-:root{
-
---primary:#2563eb;
---primary-dark:#1d4ed8;
---secondary:#0f172a;
---accent:#06b6d4;
-
---bg:#f5f9ff;
---card:#ffffff;
-
---text:#1e293b;
---text-light:#64748b;
-
---border:#e5e7eb;
-
---shadow:0 10px 30px rgba(0,0,0,.08);
-
---glass:rgba(255,255,255,.82);
-
---radius:18px;
-
---transition:.35s ease;
-
-}
-
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-}
-
-html{
-
-scroll-behavior:smooth;
-
-}
-
-body{
-
-font-family:'Poppins',sans-serif;
-
-background:linear-gradient(180deg,#f7fbff,#eef5ff);
-
-color:var(--text);
-
-overflow-x:hidden;
-
-}
-
-/* Scrollbar */
-
-::-webkit-scrollbar{
-
-width:10px;
-
-}
-
-::-webkit-scrollbar-thumb{
-
-background:var(--primary);
-
-border-radius:20px;
-
-}
-
-::-webkit-scrollbar-track{
-
-background:#edf2f7;
-
-}
-
-/* Links */
-
-a{
-
-text-decoration:none;
-
-color:inherit;
-
-}
-
-/* Images */
-
-img{
-
-max-width:100%;
-
-display:block;
-
-}
-
-/* Buttons */
-
-.btn,
-button,
-input[type=submit]{
-
-background:linear-gradient(90deg,#2563eb,#1d4ed8);
-
-color:#fff;
-
-border:none;
-
-padding:14px 28px;
-
-border-radius:14px;
-
-font-weight:600;
-
-cursor:pointer;
-
-transition:.35s;
-
-box-shadow:0 10px 25px rgba(37,99,235,.25);
-
-}
-
-.btn:hover,
-button:hover,
-input[type=submit]:hover{
-
-transform:translateY(-4px);
-
-box-shadow:0 15px 35px rgba(37,99,235,.35);
-
-}
-
-/* Inputs */
-
-input,
-textarea,
-select{
-
-width:100%;
-
-padding:14px 16px;
-
-margin-top:8px;
-
-border:1px solid #dbe4ef;
-
-border-radius:12px;
-
-background:white;
-
-outline:none;
-
-transition:.3s;
-
-font-size:15px;
-
-}
-
-input:focus,
-textarea:focus,
-select:focus{
-
-border-color:var(--primary);
-
-box-shadow:0 0 0 4px rgba(37,99,235,.12);
-
-}
-
-/* Headings */
-
-h1,h2,h3,h4{
-
-font-weight:700;
-
-color:var(--secondary);
-
-}
-
-/* =======================================================
-NAVBAR
-======================================================= */
-
-header{
-
-position:fixed;
-
-top:0;
-
-left:0;
-
-width:100%;
-
-height:82px;
+.hero{
 
 display:flex;
 
@@ -200,133 +10,99 @@ align-items:center;
 
 justify-content:space-between;
 
-padding:0 45px;
+gap:60px;
 
-background:var(--glass);
+padding:80px 0;
 
-backdrop-filter:blur(18px);
-
-box-shadow:0 8px 20px rgba(0,0,0,.06);
-
-z-index:9999;
-
-transition:.3s;
+flex-wrap:wrap;
 
 }
 
-.logo{
+.hero-left{
 
-font-size:34px;
+flex:1;
+
+min-width:300px;
+
+animation:fade .8s ease;
+
+}
+
+.hero-right{
+
+flex:1;
+
+min-width:320px;
+
+text-align:center;
+
+animation:fade .9s ease;
+
+}
+
+.hero h1{
+
+font-size:56px;
 
 font-weight:800;
 
-color:var(--primary);
+line-height:1.2;
 
-letter-spacing:.5px;
+margin-bottom:20px;
 
 }
 
-nav{
+.hero h1 span{
+
+color:var(--primary);
+
+}
+
+.hero p{
+
+font-size:18px;
+
+color:var(--text-light);
+
+margin-bottom:35px;
+
+max-width:620px;
+
+}
+
+.hero-buttons{
 
 display:flex;
 
-align-items:center;
+gap:20px;
 
-gap:35px;
-
-}
-
-nav a{
-
-font-weight:600;
-
-transition:.3s;
-
-position:relative;
+flex-wrap:wrap;
 
 }
 
-nav a::after{
+/* ===========================================================
+   FEATURES
+=========================================================== */
 
-content:"";
+.features{
 
-position:absolute;
+display:grid;
 
-left:0;
+grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
 
-bottom:-8px;
+gap:30px;
 
-width:0;
-
-height:3px;
-
-background:var(--primary);
-
-transition:.3s;
-
-border-radius:20px;
+margin-top:50px;
 
 }
 
-nav a:hover{
-
-color:var(--primary);
-
-}
-
-nav a:hover::after{
-
-width:100%;
-
-}
-
-/* Hamburger */
-
-.menu-toggle{
-
-display:none;
-
-font-size:34px;
-
-cursor:pointer;
-
-transition:.3s;
-
-user-select:none;
-
-}
-
-.menu-toggle:hover{
-
-transform:rotate(90deg);
-
-}
-
-/* =======================================================
-MAIN
-======================================================= */
-
-main{
-
-padding-top:110px;
-
-min-height:80vh;
-
-padding-left:25px;
-
-padding-right:25px;
-
-}
-
-/* Cards */
-
-.card{
+.feature-card{
 
 background:white;
 
-border-radius:20px;
+padding:35px;
 
-padding:30px;
+border-radius:20px;
 
 box-shadow:var(--shadow);
 
@@ -334,19 +110,197 @@ transition:.35s;
 
 }
 
-.card:hover{
+.feature-card:hover{
 
-transform:translateY(-6px);
+transform:translateY(-10px);
 
 }
 
-/* Glass */
+.feature-card h3{
 
-.glass{
+margin:15px 0;
 
-background:rgba(255,255,255,.7);
+font-size:22px;
 
-backdrop-filter:blur(18px);
+}
+
+.feature-card p{
+
+color:var(--text-light);
+
+}
+
+/* ===========================================================
+   RESUME BUILDER
+=========================================================== */
+
+.form-container{
+
+max-width:1100px;
+
+margin:auto;
+
+background:white;
+
+padding:40px;
+
+border-radius:22px;
+
+box-shadow:var(--shadow);
+
+}
+
+.form-grid{
+
+display:grid;
+
+grid-template-columns:repeat(2,1fr);
+
+gap:25px;
+
+}
+
+.form-group{
+
+display:flex;
+
+flex-direction:column;
+
+}
+
+.form-group label{
+
+margin-bottom:8px;
+
+font-weight:600;
+
+color:var(--secondary);
+
+}
+
+textarea{
+
+resize:vertical;
+
+min-height:140px;
+
+}
+
+.full-width{
+
+grid-column:1/-1;
+
+}
+
+/* ===========================================================
+   ATS CHECKER
+=========================================================== */
+
+.upload-card{
+
+max-width:900px;
+
+margin:auto;
+
+background:white;
+
+padding:45px;
+
+border-radius:22px;
+
+box-shadow:var(--shadow);
+
+text-align:center;
+
+}
+
+.upload-card h2{
+
+margin-bottom:15px;
+
+}
+
+.upload-card p{
+
+color:var(--text-light);
+
+margin-bottom:25px;
+
+}
+
+.upload-card input[type=file]{
+
+padding:18px;
+
+border:2px dashed var(--primary);
+
+background:#f8fbff;
+
+cursor:pointer;
+
+}
+
+.upload-card button{
+
+margin-top:25px;
+
+}
+
+/* ===========================================================
+   ATS RESULT
+=========================================================== */
+
+.result-card{
+
+margin-top:35px;
+
+background:white;
+
+border-radius:20px;
+
+padding:35px;
+
+box-shadow:var(--shadow);
+
+animation:fade .6s ease;
+
+overflow-x:auto;
+
+}
+
+.result-card h2{
+
+margin-bottom:18px;
+
+}
+
+.result-card pre{
+
+white-space:pre-wrap;
+
+word-break:break-word;
+
+font-family:inherit;
+
+font-size:15px;
+
+line-height:1.8;
+
+}
+
+/* ===========================================================
+   AI SUGGESTIONS
+=========================================================== */
+
+.suggestion-box{
+
+max-width:900px;
+
+margin:auto;
+
+background:white;
+
+padding:40px;
 
 border-radius:20px;
 
@@ -354,37 +308,285 @@ box-shadow:var(--shadow);
 
 }
 
-/* Section */
+.suggestion-item{
 
-section{
+background:#f8fbff;
 
-padding:70px 0;
+padding:18px;
 
-}
+margin-top:18px;
 
-/* Animation */
+border-left:5px solid var(--primary);
 
-.fade{
+border-radius:12px;
 
-animation:fade .7s ease;
-
-}
-
-@keyframes fade{
-
-from{
-
-opacity:0;
-
-transform:translateY(30px);
+transition:.3s;
 
 }
 
-to{
+.suggestion-item:hover{
 
-opacity:1;
+transform:translateX(6px);
 
-transform:none;
+}
+
+/* ===========================================================
+   COUNTER
+=========================================================== */
+
+.counter-section{
+
+display:grid;
+
+grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+
+gap:25px;
+
+margin:70px 0;
+
+}
+
+.counter{
+
+background:white;
+
+padding:35px;
+
+border-radius:20px;
+
+text-align:center;
+
+box-shadow:var(--shadow);
+
+}
+
+.counter h2{
+
+font-size:44px;
+
+color:var(--primary);
+
+margin-bottom:8px;
+
+}
+
+.counter p{
+
+color:var(--text-light);
+
+}
+
+/* ===========================================================
+   FOOTER
+=========================================================== */
+
+footer{
+
+margin-top:100px;
+
+padding:60px 25px;
+
+background:#0f172a;
+
+color:white;
+
+text-align:center;
+
+}
+
+footer h3{
+
+font-size:32px;
+
+margin-bottom:10px;
+
+color:white;
+
+}
+
+footer p{
+
+color:#cbd5e1;
+
+margin:6px 0;
+
+}
+
+.footer-contact{
+
+margin-top:25px;
+
+display:flex;
+
+justify-content:center;
+
+gap:30px;
+
+flex-wrap:wrap;
+
+}
+
+.footer-contact p{
+
+margin:0;
+
+}
+
+/* ===========================================================
+   RESPONSIVE
+=========================================================== */
+
+@media(max-width:992px){
+
+.hero{
+
+flex-direction:column;
+
+text-align:center;
+
+}
+
+.hero-buttons{
+
+justify-content:center;
+
+}
+
+.form-grid{
+
+grid-template-columns:1fr;
+
+}
+
+}
+
+@media(max-width:768px){
+
+header{
+
+padding:0 20px;
+
+height:75px;
+
+}
+
+.logo{
+
+font-size:28px;
+
+}
+
+.menu-toggle{
+
+display:block;
+
+}
+
+nav{
+
+position:absolute;
+
+top:75px;
+
+left:0;
+
+width:100%;
+
+display:none;
+
+flex-direction:column;
+
+background:white;
+
+box-shadow:0 15px 30px rgba(0,0,0,.12);
+
+padding:10px 0;
+
+animation:fade .3s ease;
+
+}
+
+nav.show{
+
+display:flex;
+
+}
+
+nav a{
+
+padding:18px;
+
+width:100%;
+
+text-align:center;
+
+border-bottom:1px solid #eee;
+
+}
+
+.hero{
+
+padding:40px 0;
+
+}
+
+.hero h1{
+
+font-size:38px;
+
+}
+
+.hero p{
+
+font-size:16px;
+
+}
+
+main{
+
+padding-left:15px;
+
+padding-right:15px;
+
+}
+
+.upload-card,
+.form-container,
+.suggestion-box,
+.result-card{
+
+padding:25px;
+
+}
+
+.footer-contact{
+
+flex-direction:column;
+
+gap:10px;
+
+}
+
+}
+
+@media(max-width:500px){
+
+.hero h1{
+
+font-size:30px;
+
+}
+
+button,
+.btn{
+
+width:100%;
+
+}
+
+.hero-buttons{
+
+flex-direction:column;
 
 }
 

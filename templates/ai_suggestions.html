@@ -2,7 +2,7 @@
 {% block content %}
 <div class="container">
     <h2 style="text-align: center; color: var(--primary);">AI Resume Suggestions</h2>
-    <p style="text-align: center; color: #666; margin-bottom: 2rem;">Paste your resume text below to get concise, actionable bullet-point improvements.</p>
+    <p style="text-align: center; color: #666; margin-bottom: 2rem;">Paste your resume text below to get concise, actionable improvements.</p>
     
     <form method="POST">
         <div class="form-group">
@@ -16,11 +16,11 @@
     {% if suggestions %}
     <div class="results-card">
         <h3 style="margin-top: 0;">Actionable Insights</h3>
-        <ul>
+        <div style="white-space: pre-wrap; line-height: 1.8; font-size: 1rem;">
             {% for item in suggestions %}
-            <li><strong>Fix:</strong> {{ item }}</li>
+                {{ item }}<br>
             {% endfor %}
-        </ul>
+        </div>
     </div>
     {% endif %}
 </div>

@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+    <h2 style="text-align: center; color: var(--primary);">AI Resume Suggestions</h2>
+    <p style="text-align: center; color: #666; margin-bottom: 2rem;">Paste your resume text below to get concise, actionable bullet-point improvements.</p>
+    
+    <form method="POST">
+        <div class="form-group">
+            <textarea name="resume_text" rows="10" placeholder="Paste your professional summary, experience, or project details here..." required></textarea>
+        </div>
+        <div style="text-align: center;">
+            <button type="submit" class="btn">Get AI Feedback</button>
+        </div>
+    </form>
+
+    {% if suggestions %}
+    <div class="results-card">
+        <h3 style="margin-top: 0;">Actionable Insights</h3>
+        <ul>
+            {% for item in suggestions %}
+            <li><strong>Fix:</strong> {{ item }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

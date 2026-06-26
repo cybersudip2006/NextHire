@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+    <h2 style="text-align: center; color: var(--primary);">ATS Score Checker</h2>
+    <form method="POST" enctype="multipart/form-data" style="text-align: center; padding: 2rem 0;">
+        <div class="form-group">
+            <label>Upload PDF Resume</label>
+            <input type="file" name="resume_pdf" accept=".pdf" required style="max-width: 400px; margin: 0 auto;">
+        </div>
+        <button type="submit" class="btn">Analyze Resume</button>
+    </form>
+
+    {% if results %}
+    <div class="results-card">
+        <h3 style="font-size: 2rem; color: var(--primary); margin-top: 0;">Score: {{ results.score }}/100</h3>
+        
+        <div class="form-row" style="margin-bottom: 20px;">
+            <div>
+                <strong>Contact Section:</strong> 
+                <span style="color: {% if results.contact == 'Complete' %}green{% else %}red{% endif %};">{{ results.contact }}</span>
+            </div>
+            <div>
+                <strong>Formatting Issues:</strong> {{ results.formatting }}
+            </div>
+        </div>
+
+        <h4>Skills Analysis</h4>
+        <ul>
+            {% for skill in results.skills %}
+            <li>{{ skill }}</li>
+            {% endfor %}
+        </ul>
+        
+        <h4>Missing Keywords</h4>
+        <ul>
+            {% for word in results.missing %}
+            <li style="color: #b91c1c;">{{ word }}</li>
+            {% else %}
+            <li style="color: green;">No major keywords missing!</li>
+            {% endfor %}
+        </ul>
+
+        <h4>Improvement Suggestions</h4>
+        <ul>
+            {% for tip in results.suggestions %}
+            <li>{{ tip }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

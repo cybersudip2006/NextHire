@@ -73,7 +73,7 @@ def ats_checker():
             genai.configure(api_key=api_key)
             model = genai.GenerativeModel('gemini-1.5-flash')
             
-          prompt = f"""
+            prompt = f"""
                 Act as an expert ATS (Applicant Tracking System) recruiter. 
                 Analyze the following resume text and provide a comprehensive report.
 
@@ -90,15 +90,15 @@ def ats_checker():
 
                 Resume Text: {text[:15000]}
                 """
-response = model.generate_content(prompt)
+            response = model.generate_content(prompt)
             
             # Here we pass the AI's raw response to the template
-    results = {
-          "ai_feedback": response.text
-     }
+            results = {
+                "ai_feedback": response.text
+            }
             
     return render_template('ats_checker.html', results=results)
-
+    
 @app.route('/ai-suggestions', methods=['GET', 'POST'])
 def ai_suggestions():
     suggestions = None

@@ -434,15 +434,17 @@ justify-content:center;
 }
 .hero h1{
 
-font-size:68px;
+font-size:72px;
 
 font-weight:800;
+
+color:var(--primary);
 
 line-height:1.15;
 
 margin-bottom:20px;
 
-color:#2563eb;
+min-height:95px;
 
 }
 .hero h1 span{
@@ -474,6 +476,32 @@ gap:22px;
 margin-bottom:70px;
 
 flex-wrap:wrap;
+
+}
+.typing-container{
+
+font-size:72px;
+
+font-weight:800;
+
+color:var(--primary);
+
+text-align:center;
+
+min-height:95px;
+
+}
+.tagline{
+
+font-size:30px;
+
+font-weight:500;
+
+color:#64748b;
+
+margin:25px 0 45px;
+
+text-align:center;
 
 }
 

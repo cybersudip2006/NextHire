@@ -1,4 +1,10 @@
-// Typing Animation Logic
+// --- Mobile Menu Toggle ---
+function toggleMenu() {
+    const navLinks = document.querySelector('.nav-links');
+    navLinks.classList.toggle('active');
+}
+
+// --- Typing Animation Logic ---
 const phrases = ["Get an Interview", "Get Hired", "Get Promoted", "Land Your Dream Job"];
 let currentPhrase = 0; let letterIndex = 0; let isDeleting = false;
 const typingElement = document.getElementById("typing-text");
@@ -28,7 +34,7 @@ function type() {
     setTimeout(type, typeSpeed);
 }
 
-// Resume Counter Logic (1000 to 1200+)
+// --- Resume Counter Logic ---
 const counterElement = document.getElementById("resume-counter");
 function runCounter() {
     if(!counterElement) return;
@@ -39,18 +45,19 @@ function runCounter() {
             counterElement.innerText = target + "+";
             clearInterval(interval);
         } else {
-            count += 3; // Speed increment
+            count += 3; 
             counterElement.innerText = count;
         }
     }, 20);
 }
 
+// --- Initialization ---
 document.addEventListener("DOMContentLoaded", () => {
     type();
     runCounter();
 });
 
-// Dynamic Phone & Country Code Validation
+// --- Dynamic Phone & Country Code Validation ---
 const countryData = {
     "IN": { code: "+91", len: 10 },
     "US": { code: "+1", len: 10 },
@@ -64,9 +71,11 @@ const hiddenCodeInput = document.getElementById("hidden_country_code");
 if(countrySelect && phoneInput) {
     countrySelect.addEventListener("change", function() {
         const data = countryData[this.value];
-        hiddenCodeInput.value = data.code;
-        phoneInput.maxLength = data.len;
-        phoneInput.placeholder = `Enter ${data.len} digits`;
-        phoneInput.value = ""; // Clear on country change
+        if (data) {
+            hiddenCodeInput.value = data.code;
+            phoneInput.maxLength = data.len;
+            phoneInput.placeholder = `Enter ${data.len} digits`;
+            phoneInput.value = ""; 
+        }
     });
 }

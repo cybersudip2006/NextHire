@@ -1060,3 +1060,13 @@ font-size:32px;
 }
 
 }
+.btn-outline{
+    background:white;
+    color:var(--primary);
+    border:2px solid var(--primary);
+}
+
+.btn-outline:hover{
+    background:var(--primary);
+    color:white;
+}

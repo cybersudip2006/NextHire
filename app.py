@@ -61,50 +61,71 @@ def ats_checker():
         
         file = request.files['resume_pdf']
         if file.filename != '':
-            # Extract text from PDF
-            text = ""
-            with pdfplumber.open(file) as pdf:
-                for page in pdf.pages:
-                    text += page.extract_text() + "\n"
-            
-            # --- GEMINI AI ANALYSIS ---
+            try:
+                # 1. Extract text safely
+                text = ""
+                with pdfplumber.open(file) as pdf:
+                    for page in pdf.pages:
+                        text += (page.extract_text() or "") + "\n"
+                
+                if not text.strip():
+                    results = {"ai_feedback": "Error: Could not read text from this PDF. Please ensure it is a text-based PDF."}
+                else:
+                    # 2. Configure AI
+                    import google.generativeai as genai
+                    api_key = os.environ.get("GEMINI_API_KEY")
+                    genai.configure(api_key=api_key)
+                    model = genai.GenerativeModel('gemini-1.5-flash')
+                    
+                    prompt = f"""
+                    Act as an expert ATS recruiter. Analyze this resume: {text[:15000]}
+                    Provide a score, missing keywords, critique, and improvements using Markdown.
+                    """
+                    
+                    response = model.generate_content(prompt)
+                    results = {"ai_feedback": response.text}
+                    
+            except Exception as e:
+                # If anything crashes (API key, network, PDF error), show the error here
+                results = {"ai_feedback": f"System Error during analysis: {str(e)}"}
+                
+    return render_template('ats_checker.html', results=results)
+
+@app.route('/ai-suggestions', methods=['GET', 'POST'])
+def ai_suggestions():
+    suggestions = None
+    if request.method == 'POST':
+        text_input = request.form.get('resume_text')
+        
+        # Safety check: ensure text isn't empty
+        if not text_input or len(text_input.strip()) < 20:
+            return render_template('ai_suggestions.html', suggestions=["Please enter a longer resume text (at least 20 characters)."])
+
+        try:
             import google.generativeai as genai
             api_key = os.environ.get("GEMINI_API_KEY")
+            
+            if not api_key:
+                return render_template('ai_suggestions.html', suggestions=["Error: API Key not configured on server."])
+
             genai.configure(api_key=api_key)
             model = genai.GenerativeModel('gemini-1.5-flash')
             
-            prompt = f"""
-                Act as an expert ATS (Applicant Tracking System) recruiter. 
-                Analyze the following resume text and provide a comprehensive report.
-
-                Use Markdown formatting:
-                - Use ### for section titles.
-                - Use **bold** for key terms or scores.
-                - Use - for bullet points.
-
-                Please include:
-                1. An ATS compatibility score (0-100).
-                2. A list of missing keywords for a professional tech role.
-                3. A brief critique of the formatting and content.
-                4. 3 specific, actionable improvements.
-
-                Resume Text: {text[:15000]}
-                """
+            prompt = f"Analyze this resume text and provide 3-5 concise, bullet-point suggestions for improvement: {text_input}"
+            
             response = model.generate_content(prompt)
             
-            # Here we pass the AI's raw response to the template
-            results = {
-                "ai_feedback": response.text
-            }
-            
-    return render_template('ats_checker.html', results=results)
-@app.route('/ai-suggestions', methods=['GET', 'POST'])
-def ai_suggestions():
-    try:
-        # ... your existing code ...
-        return render_template('ai_suggestions.html', suggestions=suggestions)
-    except Exception as e:
-        return f"Error: {str(e)}" # This will show you the exact error on your screen!
+            # Clean up the response
+            if response.text:
+                suggestions = [line.strip('* ').strip('- ') for line in response.text.split('\n') if line.strip()]
+            else:
+                suggestions = ["The AI returned an empty response. Try again!"]
+                
+        except Exception as e:
+            # This captures any crash and prints the error message instead of showing 500
+            suggestions = [f"System Error: {str(e)}"]
+        
+    return render_template('ai_suggestions.html', suggestions=suggestions)
     
 # --- PDF GENERATOR (No QR Code) ---
 def generate_pdf(name, email, phone, address, objective, form):

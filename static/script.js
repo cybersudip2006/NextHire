@@ -470,4 +470,72 @@ document.addEventListener("DOMContentLoaded", () => {
     /* CURRENT YEAR */
     const year = $("#current-year");
     if (year) year.textContent = new Date().getFullYear();
+
+/* ===========================================================
+   LIVE PREVIEW TEMPLATE STYLE SWITCHER
+   Added for template-wise preview styling
+=========================================================== */
+
+function updatePreviewTemplateStyle() {
+    const selected = document.querySelector('input[name="template_style"]:checked');
+    const preview = document.querySelector(".preview-paper");
+
+    if (!selected || !preview) return;
+
+    const template = selected.value;
+
+    preview.className = "preview-paper";
+    preview.classList.add("template-" + template);
+
+    const previewTitle = document.getElementById("preview-title");
+
+    if (previewTitle) {
+        const labelMap = {
+            modern_blue: "Modern Professional Resume",
+            professional_black: "Professional Resume",
+            minimal: "Minimal Clean Resume",
+            executive: "Executive Profile",
+            creative: "Creative Portfolio Resume",
+            ats: "ATS Optimized Resume",
+            fresher: "Fresher Resume",
+            experienced: "Experienced Professional",
+            software: "Software Developer Resume",
+            datascience: "Data Science / AI Resume",
+            cyber: "Cyber Security Resume",
+            student: "Student Resume"
+        };
+
+        if (!previewTitle.dataset.userTyped) {
+            previewTitle.textContent = labelMap[template] || "Professional Resume";
+        }
+    }
+}
+
+document.querySelectorAll('input[name="template_style"]').forEach(radio => {
+    radio.addEventListener("change", updatePreviewTemplateStyle);
+});
+
+document.querySelectorAll(".template-card").forEach(card => {
+    card.addEventListener("click", () => {
+        setTimeout(updatePreviewTemplateStyle, 60);
+    });
+});
+
+const titleInputForPreview = document.getElementById("title");
+if (titleInputForPreview) {
+    titleInputForPreview.addEventListener("input", () => {
+        const previewTitle = document.getElementById("preview-title");
+        if (!previewTitle) return;
+
+        if (titleInputForPreview.value.trim()) {
+            previewTitle.dataset.userTyped = "true";
+        } else {
+            delete previewTitle.dataset.userTyped;
+            updatePreviewTemplateStyle();
+        }
+    });
+}
+
+updatePreviewTemplateStyle();
+
 });

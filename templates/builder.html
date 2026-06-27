@@ -1,96 +1,1004 @@
 {% extends "base.html" %}
+{% block title %}Resume Builder | NextHire{% endblock %}
+
 {% block content %}
-<div class="container">
-    <h2 style="text-align: center; color: var(--primary); margin-top: 0;">Build Your Resume</h2>
-    <form method="POST" action="/builder">
-        
-        <!-- Template Selection Placeholder -->
-        <div class="form-group">
-            <label>Select Template Style</label>
-            <select name="template_style">
-                <option value="ats_1">ATS Format - Style 1 (Minimal)</option>
-                <option value="ats_2">ATS Format - Style 2 (Modern)</option>
-                <option value="modern_1">Modern Format - Style 1 (Two Column)</option>
-                <option value="fresher">Fresher / Student Template</option>
-                <!-- 20 templates logic will populate here -->
-            </select>
+
+<section class="builder-page">
+
+    <!-- =========================
+         PAGE HEADER
+    ========================== -->
+
+    <div class="builder-header fade">
+
+        <h1>Build Your Professional Resume</h1>
+
+        <p>
+            Create an ATS-Friendly resume in minutes using AI-powered templates.
+        </p>
+
+    </div>
+
+    <!-- =========================
+         BUILD PROGRESS
+    ========================== -->
+
+    <div class="builder-progress fade">
+
+        <div class="progress-step active">
+            1
+            <span>Template</span>
         </div>
 
-        <div class="form-row">
-            <div class="form-group">
-                <label>Full Name (Max 100 char)</label>
-                <input type="text" name="name" maxlength="100" required>
-            </div>
-            <div class="form-group">
-                <label>Email</label>
-                <input type="email" name="email" required>
-            </div>
+        <div class="progress-line"></div>
+
+        <div class="progress-step">
+            2
+            <span>Information</span>
         </div>
 
-        <div class="form-row">
-            <div class="form-group">
-                <label>Phone Number</label>
-                <div class="phone-input-group">
-                    <select id="country_select">
-                        <option value="IN">India (+91)</option>
-                        <option value="US">USA (+1)</option>
-                        <option value="UK">UK (+44)</option>
-                    </select>
-                    <input type="hidden" name="country_code" id="hidden_country_code" value="+91">
-                    <input type="text" name="phone" id="phone_input" maxlength="10" placeholder="Enter 10 digits" required pattern="\d*">
+        <div class="progress-line"></div>
+
+        <div class="progress-step">
+            3
+            <span>Download</span>
+        </div>
+
+    </div>
+
+    <!-- =========================
+         FORM START
+    ========================== -->
+
+    <form method="POST"
+          action="/builder"
+          enctype="multipart/form-data"
+          class="resume-builder-form">
+
+        <!-- =========================
+             TEMPLATE GALLERY
+        ========================== -->
+
+        <div class="builder-card fade">
+
+            <h2>
+                Choose Resume Template
+            </h2>
+
+            <p class="section-subtitle">
+                Select a professional template. PDF support will be enabled in the next update.
+            </p>
+
+            <div class="template-grid">
+
+                <label class="template-card">
+
+                    <input type="radio"
+                           name="template_style"
+                           value="modern_blue"
+                           checked>
+
+                    <div class="template-icon">📘</div>
+
+                    <h3>Modern Blue</h3>
+
+                    <small>Clean • ATS Friendly</small>
+
+                </label>
+
+                <label class="template-card">
+
+                    <input type="radio"
+                           name="template_style"
+                           value="professional_black">
+
+                    <div class="template-icon">⚫</div>
+
+                    <h3>Professional</h3>
+
+                    <small>Corporate Style</small>
+
+                </label>
+
+                <label class="template-card">
+
+                    <input type="radio"
+                           name="template_style"
+                           value="minimal">
+
+                    <div class="template-icon">🟢</div>
+
+                    <h3>Minimal</h3>
+
+                    <small>Simple & Elegant</small>
+
+                </label>
+
+                <label class="template-card">
+
+                    <input type="radio"
+                           name="template_style"
+                           value="executive">
+
+                    <div class="template-icon">🟣</div>
+
+                    <h3>Executive</h3>
+
+                    <small>Management Resume</small>
+
+                </label>
+
+                <label class="template-card">
+
+                    <input type="radio"
+                           name="template_style"
+                           value="creative">
+
+                    <div class="template-icon">🟠</div>
+
+                    <h3>Creative</h3>
+
+                    <small>Modern Portfolio</small>
+
+                </label>
+
+                <label class="template-card">
+
+                    <input type="radio"
+                           name="template_style"
+                           value="ats">
+
+                    <div class="template-icon">🔵</div>
+
+                    <h3>ATS Optimized</h3>
+
+                    <small>Maximum Compatibility</small>
+
+                </label>
+
+                <label class="template-card">
+
+                    <input type="radio"
+                           name="template_style"
+                           value="student">
+
+                    <div class="template-icon">🎓</div>
+
+                    <h3>Student</h3>
+
+                    <small>Freshers</small>
+
+                </label>
+
+                <label class="template-card">
+
+                    <input type="radio"
+                           name="template_style"
+                           value="developer">
+
+                    <div class="template-icon">👨‍💻</div>
+
+                    <h3>Software Developer</h3>
+
+                    <small>IT Resume</small>
+
+                </label>
+
+                <label class="template-card">
+
+                    <input type="radio"
+                           name="template_style"
+                           value="aiml">
+
+                    <div class="template-icon">📊</div>
+
+                    <h3>AI / ML</h3>
+
+                    <small>Data Science</small>
+
+                </label>
+
+                <label class="template-card">
+
+                    <input type="radio"
+                           name="template_style"
+                           value="cyber">
+
+                    <div class="template-icon">🔐</div>
+
+                    <h3>Cyber Security</h3>
+
+                    <small>Security Resume</small>
+
+                </label>
+
+                <label class="template-card">
+
+                    <input type="radio"
+                           name="template_style"
+                           value="experienced">
+
+                    <div class="template-icon">💼</div>
+
+                    <h3>Experienced</h3>
+
+                    <small>Senior Professional</small>
+
+                </label>
+
+                <label class="template-card">
+
+                    <input type="radio"
+                           name="template_style"
+                           value="custom">
+
+                    <div class="template-icon">⭐</div>
+
+                    <h3>Custom</h3>
+
+                    <small>Fully Flexible</small>
+
+                </label>
+
+            </div>
+
+        </div>
+
+        <!-- =========================
+             PROFILE PHOTO
+        ========================== -->
+
+        <div class="builder-card fade">
+
+            <h2>
+
+                Profile Picture
+
+            </h2>
+
+            <p class="section-subtitle">
+
+                Optional • Recommended for Modern Templates
+
+            </p>
+
+            <div class="photo-upload">
+
+                <img
+                    src="https://placehold.co/160x160?text=Photo"
+                    id="photoPreview"
+                    class="profile-preview">
+
+                <input
+                    type="file"
+                    id="profilePhoto"
+                    name="profile_photo"
+                    accept="image/*">
+
+            </div>
+
+        </div>
+
+        <!-- =========================
+             PERSONAL INFORMATION
+        ========================== -->
+
+        <div class="builder-card fade">
+
+            <h2>
+
+                Personal Information
+
+            </h2>
+
+            <div class="form-grid">
+
+                <div class="form-group">
+
+                    <label>Full Name *</label>
+
+                    <input
+                        type="text"
+                        name="name"
+                        maxlength="100"
+                        required>
+
                 </div>
+
+                <div class="form-group">
+
+                    <label>Email *</label>
+
+                    <input
+                        type="email"
+                        name="email"
+                        required>
+
+                </div>
+
+                <div class="form-group">
+
+                    <label>Phone *</label>
+
+                    <div class="phone-input-group">
+
+                        <select
+                            id="country_select">
+
+                            <option value="IN">
+                                India (+91)
+                            </option>
+
+                            <option value="US">
+                                USA (+1)
+                            </option>
+
+                            <option value="UK">
+                                UK (+44)
+                            </option>
+
+                        </select>
+
+                        <input
+                            type="hidden"
+                            id="hidden_country_code"
+                            name="country_code"
+                            value="+91">
+
+                        <input
+                            type="text"
+                            id="phone_input"
+                            name="phone"
+                            maxlength="10"
+                            required>
+
+                    </div>
+
+                </div>
+
+                <div class="form-group">
+
+                    <label>Professional Title</label>
+
+                    <input
+                        type="text"
+                        name="title"
+                        placeholder="Software Engineer">
+
+                </div>
+
+                <div class="form-group full-width">
+
+                    <label>Address</label>
+
+                    <textarea
+                        rows="2"
+                        maxlength="250"
+                        name="address"></textarea>
+
+                </div>
+
+                <div class="form-group">
+
+                    <label>LinkedIn</label>
+
+                    <input
+                        type="url"
+                        name="linkedin">
+
+                </div>
+
+                <div class="form-group">
+
+                    <label>GitHub</label>
+
+                    <input
+                        type="url"
+                        name="github">
+
+                </div>
+
+                <div class="form-group full-width">
+
+                    <label>Portfolio Website</label>
+
+                    <input
+                        type="url"
+                        name="portfolio">
+
+                </div>
+
+                <div class="form-group full-width">
+
+                    <label>Professional Summary</label>
+
+                    <textarea
+                        rows="5"
+                        name="objective"
+                        placeholder="Write a professional summary..."></textarea>
+
+                </div>
+
             </div>
+
         </div>
 
-        <div class="form-group">
-            <label>Address (Max 250 char)</label>
-            <textarea name="address" maxlength="250" rows="2" required></textarea>
-        </div>
-        
-        <div class="form-group">
-            <label>Professional Objective</label>
-            <textarea name="objective" rows="3"></textarea>
-        </div>
+        <!-- PART 2 STARTS HERE -->
+<!-- =========================
+     SELECT RESUME SECTIONS
+========================== -->
 
-        <hr style="border: 0; border-top: 1px solid #e5e7eb; margin: 30px 0;">
+<div class="builder-card fade">
 
-        <!-- Education block with Start/End Year -->
-        <h3 style="color: var(--primary);">Education</h3>
-        <div class="form-group">
-            <label>Institution Name</label>
-            <input type="text" name="edu_school">
-        </div>
-        <div class="form-row">
-            <div class="form-group">
-                <label>Start Year (Optional)</label>
-                <input type="number" name="edu_start" min="1980" max="2030" placeholder="YYYY">
-            </div>
-            <div class="form-group">
-                <label>End Year (Optional)</label>
-                <input type="number" name="edu_end" min="1980" max="2030" placeholder="YYYY">
-            </div>
-        </div>
+    <h2>Select Resume Sections</h2>
 
-        <!-- Experience block with Start/End Year -->
-        <h3 style="color: var(--primary);">Experience / Internships</h3>
-        <div class="form-group">
-            <label>Company / Organization Name</label>
-            <input type="text" name="exp_company">
-        </div>
-        <div class="form-row">
-            <div class="form-group">
-                <label>Start Year (Optional)</label>
-                <input type="number" name="exp_start" min="1980" max="2030" placeholder="YYYY">
-            </div>
-            <div class="form-group">
-                <label>End Year (Optional)</label>
-                <input type="number" name="exp_end" min="1980" max="2030" placeholder="YYYY">
-            </div>
-        </div>
+    <p class="section-subtitle">
+        Choose only the sections you want to include in your resume.
+    </p>
 
-        <div style="text-align: center; margin-top: 30px;">
-            <button type="submit" class="btn" style="width: 100%; font-size: 1.1rem;">Generate Resume PDF</button>
-        </div>
-    </form>
+    <div class="section-selector">
+
+        <label><input type="checkbox" checked name="include_education"> 🎓 Education</label>
+
+        <label><input type="checkbox" checked name="include_experience"> 💼 Experience</label>
+
+        <label><input type="checkbox" checked name="include_projects"> 🚀 Projects</label>
+
+        <label><input type="checkbox" checked name="include_skills"> 🛠 Skills</label>
+
+        <label><input type="checkbox" name="include_certifications"> 📜 Certifications</label>
+
+        <label><input type="checkbox" name="include_languages"> 🌍 Languages</label>
+
+        <label><input type="checkbox" name="include_achievements"> 🏆 Achievements</label>
+
+        <label><input type="checkbox" name="include_publications"> 📚 Publications</label>
+
+        <label><input type="checkbox" name="include_hobbies"> 🎯 Hobbies</label>
+
+        <label><input type="checkbox" name="include_references"> 👥 References</label>
+
+    </div>
+
 </div>
+
+<!-- =========================
+     EDUCATION
+========================== -->
+
+<div class="builder-card fade" id="education-section">
+
+    <h2>🎓 Education</h2>
+
+    <div class="form-grid">
+
+        <div class="form-group">
+
+            <label>Institution Name</label>
+
+            <input
+                type="text"
+                name="edu_school">
+
+        </div>
+
+        <div class="form-group">
+
+            <label>Degree</label>
+
+            <input
+                type="text"
+                name="edu_degree"
+                placeholder="B.Tech Computer Science">
+
+        </div>
+
+        <div class="form-group">
+
+            <label>Start Year</label>
+
+            <input
+                type="number"
+                name="edu_start">
+
+        </div>
+
+        <div class="form-group">
+
+            <label>End Year</label>
+
+            <input
+                type="number"
+                name="edu_end">
+
+        </div>
+
+        <div class="form-group full-width">
+
+            <label>CGPA / Percentage</label>
+
+            <input
+                type="text"
+                name="edu_marks">
+
+        </div>
+
+    </div>
+
+    <button type="button" class="btn add-btn">
+
+        + Add Another Education
+
+    </button>
+
+</div>
+
+<!-- =========================
+     EXPERIENCE
+========================== -->
+
+<div class="builder-card fade" id="experience-section">
+
+    <h2>💼 Experience</h2>
+
+    <div class="form-grid">
+
+        <div class="form-group">
+
+            <label>Company</label>
+
+            <input
+                type="text"
+                name="exp_company">
+
+        </div>
+
+        <div class="form-group">
+
+            <label>Job Role</label>
+
+            <input
+                type="text"
+                name="exp_role">
+
+        </div>
+
+        <div class="form-group">
+
+            <label>Start Year</label>
+
+            <input
+                type="number"
+                name="exp_start">
+
+        </div>
+
+        <div class="form-group">
+
+            <label>End Year</label>
+
+            <input
+                type="number"
+                name="exp_end">
+
+        </div>
+
+        <div class="form-group full-width">
+
+            <label>Description</label>
+
+            <textarea
+                rows="4"
+                name="exp_description"
+                placeholder="Describe your responsibilities and achievements..."></textarea>
+
+        </div>
+
+    </div>
+
+    <button type="button" class="btn add-btn">
+
+        + Add Another Experience
+
+    </button>
+
+</div>
+
+<!-- =========================
+     PROJECTS
+========================== -->
+
+<div class="builder-card fade" id="project-section">
+
+    <h2>🚀 Projects</h2>
+
+    <div class="form-grid">
+
+        <div class="form-group">
+
+            <label>Project Name</label>
+
+            <input
+                type="text"
+                name="project_name">
+
+        </div>
+
+        <div class="form-group">
+
+            <label>Technology Used</label>
+
+            <input
+                type="text"
+                name="project_tech"
+                placeholder="Python, Flask, SQLite">
+
+        </div>
+
+        <div class="form-group full-width">
+
+            <label>Project Description</label>
+
+            <textarea
+                rows="4"
+                name="project_description"></textarea>
+
+        </div>
+
+        <div class="form-group">
+
+            <label>GitHub Link</label>
+
+            <input
+                type="url"
+                name="project_github">
+
+        </div>
+
+        <div class="form-group">
+
+            <label>Live Demo</label>
+
+            <input
+                type="url"
+                name="project_demo">
+
+        </div>
+
+    </div>
+
+    <button type="button" class="btn add-btn">
+
+        + Add Another Project
+
+    </button>
+
+</div>
+
+<!-- =========================
+     SKILLS
+========================== -->
+
+<div class="builder-card fade" id="skills-section">
+
+    <h2>🛠 Skills</h2>
+
+    <p class="section-subtitle">
+
+        Separate skills using commas.
+
+    </p>
+
+    <textarea
+
+        rows="5"
+
+        name="skills"
+
+        placeholder="Python, Java, C, Flask, SQL, HTML, CSS, JavaScript, Machine Learning"></textarea>
+
+</div>
+
+<!-- PART 3 STARTS BELOW -->
+        <!-- =========================
+     CERTIFICATIONS
+========================= -->
+
+<div class="builder-card fade" id="certification-section">
+
+    <h2>📜 Certifications</h2>
+
+    <div class="form-grid">
+
+        <div class="form-group">
+
+            <label>Certification Name</label>
+
+            <input type="text" name="certification_name">
+
+        </div>
+
+        <div class="form-group">
+
+            <label>Issued By</label>
+
+            <input type="text" name="certification_org">
+
+        </div>
+
+        <div class="form-group">
+
+            <label>Year</label>
+
+            <input type="number" name="certification_year">
+
+        </div>
+
+        <div class="form-group">
+
+            <label>Certificate Link</label>
+
+            <input type="url" name="certification_link">
+
+        </div>
+
+    </div>
+
+    <button type="button" class="btn add-btn">
+
+        + Add Another Certification
+
+    </button>
+
+</div>
+
+<!-- =========================
+     LANGUAGES
+========================= -->
+
+<div class="builder-card fade" id="language-section">
+
+    <h2>🌍 Languages</h2>
+
+    <textarea rows="3"
+              name="languages"
+              placeholder="English, Bengali, Hindi"></textarea>
+
+</div>
+
+<!-- =========================
+     ACHIEVEMENTS
+========================= -->
+
+<div class="builder-card fade" id="achievement-section">
+
+    <h2>🏆 Achievements</h2>
+
+    <textarea rows="5"
+              name="achievements"
+              placeholder="Hackathons, Awards, Scholarships..."></textarea>
+
+</div>
+
+<!-- =========================
+     PUBLICATIONS
+========================= -->
+
+<div class="builder-card fade" id="publication-section">
+
+    <h2>📚 Publications</h2>
+
+    <textarea rows="5"
+              name="publications"
+              placeholder="Research papers, journals, blogs..."></textarea>
+
+</div>
+
+<!-- =========================
+     INTERESTS
+========================= -->
+
+<div class="builder-card fade" id="interest-section">
+
+    <h2>❤️ Interests</h2>
+
+    <textarea rows="4"
+              name="interests"
+              placeholder="Coding, Cricket, Reading..."></textarea>
+
+</div>
+
+<!-- =========================
+     REFERENCES
+========================= -->
+
+<div class="builder-card fade" id="reference-section">
+
+    <h2>👥 References</h2>
+
+    <textarea rows="4"
+              name="references"
+              placeholder="Reference Name, Company, Email"></textarea>
+
+</div>
+
+<!-- =========================
+     CUSTOM SECTION
+========================= -->
+
+<div class="builder-card fade">
+
+    <h2>⭐ Custom Section</h2>
+
+    <div class="form-grid">
+
+        <div class="form-group">
+
+            <label>Section Title</label>
+
+            <input
+                type="text"
+                name="custom_title"
+                placeholder="Volunteer Experience">
+
+        </div>
+
+        <div class="form-group full-width">
+
+            <label>Section Content</label>
+
+            <textarea
+                rows="6"
+                name="custom_content"
+                placeholder="Anything you want to include..."></textarea>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- =========================
+     LIVE PREVIEW
+========================= -->
+
+<div class="builder-card fade">
+
+    <h2>👀 Resume Preview</h2>
+
+    <p class="section-subtitle">
+
+        Live preview will appear here after we complete script.js.
+
+    </p>
+
+    <div class="resume-preview">
+
+        <div class="preview-paper">
+
+            <h1 id="preview-name">
+
+                Your Name
+
+            </h1>
+
+            <p id="preview-title">
+
+                Professional Title
+
+            </p>
+
+            <hr>
+
+            <h3>
+
+                Professional Summary
+
+            </h3>
+
+            <p>
+
+                Your professional summary will appear here.
+
+            </p>
+
+            <hr>
+
+            <h3>
+
+                Education
+
+            </h3>
+
+            <p>
+
+                Institution • Degree
+
+            </p>
+
+            <hr>
+
+            <h3>
+
+                Experience
+
+            </h3>
+
+            <p>
+
+                Company • Position
+
+            </p>
+
+            <hr>
+
+            <h3>
+
+                Projects
+
+            </h3>
+
+            <p>
+
+                Project details...
+
+            </p>
+
+            <hr>
+
+            <h3>
+
+                Skills
+
+            </h3>
+
+            <p>
+
+                Python • Flask • SQL
+
+            </p>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- =========================
+     SUBMIT
+========================= -->
+
+<div class="builder-card fade">
+
+    <div style="text-align:center">
+
+        <button
+            type="submit"
+            class="btn"
+            style="font-size:20px;padding:18px 45px;">
+
+            🚀 Generate Professional Resume
+
+        </button>
+
+        <p style="margin-top:18px;color:#64748b;">
+
+            ✔ ATS Friendly
+            &nbsp; | &nbsp;
+            ✔ Multiple Templates
+            &nbsp; | &nbsp;
+            ✔ AI Powered
+            &nbsp; | &nbsp;
+            ✔ Multi Page
+
+        </p>
+
+    </div>
+
+</div>
+
+</form>
+
+</section>
+
 {% endblock %}

@@ -60,7 +60,20 @@ def create_document():
     )
 
     return document, buffer
+# =====================================================
+# SHOULD INCLUDE SECTION
+# =====================================================
 
+def include_section(form, field_name):
+
+    value = form.get(field_name)
+
+    if value is None:
+        return False
+
+    value = str(value).strip().lower()
+
+    return value in ("true", "1", "yes", "on")
 
 # =====================================================
 # TITLE
@@ -210,161 +223,157 @@ def section(story,title,value):
 # EDUCATION
 # =====================================================
 
-def education_section(story,form):
+def education_section(story, form):
 
-    school=form.get("edu_school","")
-
-    if school=="":
-
+    if not include_section(form, "include_education"):
         return
 
-    start=form.get("edu_start","")
+    school = form.get("edu_school", "")
 
-    end=form.get("edu_end","")
+    if school.strip() == "":
+        return
 
-    degree=form.get("degree","")
+    start = form.get("edu_start", "")
+    end = form.get("edu_end", "")
+    degree = form.get("degree", "")
+    grade = form.get("cgpa", "")
 
-    grade=form.get("cgpa","")
+    add_heading(story, "Education")
 
-    add_heading(story,"Education")
-
-    txt=f"<b>{school}</b><br/>"
+    txt = f"<b>{school}</b><br/>"
 
     if degree:
-
-        txt+=degree+"<br/>"
+        txt += degree + "<br/>"
 
     if start or end:
-
-        txt+=f"{start} - {end}<br/>"
+        txt += f"{start} - {end}<br/>"
 
     if grade:
+        txt += f"CGPA : {grade}"
 
-        txt+=f"CGPA : {grade}"
-
-    add_text(story,txt)
-
+    add_text(story, txt)
 
 # =====================================================
 # EXPERIENCE
 # =====================================================
 
-def experience_section(story,form):
+def experience_section(story, form):
 
-    company=form.get("exp_company","")
-
-    if company=="":
-
+    if not include_section(form, "include_experience"):
         return
 
-    start=form.get("exp_start","")
+    company = form.get("exp_company", "")
 
-    end=form.get("exp_end","")
+    if company.strip() == "":
+        return
 
-    role=form.get("exp_role","")
+    start = form.get("exp_start", "")
+    end = form.get("exp_end", "")
+    role = form.get("exp_role", "")
+    desc = form.get("exp_desc", "")
 
-    desc=form.get("exp_desc","")
+    add_heading(story, "Experience")
 
-    add_heading(story,"Experience")
-
-    txt=f"<b>{company}</b><br/>"
+    txt = f"<b>{company}</b><br/>"
 
     if role:
-
-        txt+=role+"<br/>"
+        txt += role + "<br/>"
 
     if start or end:
+        txt += f"{start} - {end}<br/>"
 
-        txt+=f"{start} - {end}<br/>"
+    txt += desc
 
-    txt+=desc
-
-    add_text(story,txt)
-
+    add_text(story, txt)
 
 # =====================================================
 # PROJECTS
 # =====================================================
 
-def projects_section(story,form):
+def projects_section(story, form):
 
-    project=form.get("project","")
-
-    if project=="":
-
+    if not include_section(form, "include_projects"):
         return
 
-    add_heading(story,"Projects")
+    project = form.get("project", "")
 
-    add_text(story,project)
+    if project.strip() == "":
+        return
 
+    add_heading(story, "Projects")
 
+    add_text(story, project)
 # =====================================================
 # SKILLS
 # =====================================================
 
-def skills_section(story,form):
+def skills_section(story, form):
 
-    skills=form.get("skills","")
-
-    if skills=="":
-
+    if not include_section(form, "include_skills"):
         return
 
-    add_heading(story,"Skills")
+    skills = form.get("skills", "")
 
-    add_text(story,skills)
+    if skills.strip() == "":
+        return
+
+    add_heading(story, "Skills")
+
+    add_text(story, skills)
 
 
 # =====================================================
 # CERTIFICATIONS
 # =====================================================
 
-def certification_section(story,form):
+def certification_section(story, form):
 
-    cert=form.get("certification","")
-
-    if cert=="":
-
+    if not include_section(form, "include_certifications"):
         return
 
-    add_heading(story,"Certifications")
+    cert = form.get("certification", "")
 
-    add_text(story,cert)
+    if cert.strip() == "":
+        return
 
+    add_heading(story, "Certifications")
 
+    add_text(story, cert)
 # =====================================================
 # ACHIEVEMENTS
 # =====================================================
 
-def achievement_section(story,form):
+def achievement_section(story, form):
 
-    ach=form.get("achievement","")
-
-    if ach=="":
-
+    if not include_section(form, "include_achievements"):
         return
 
-    add_heading(story,"Achievements")
+    ach = form.get("achievement", "")
 
-    add_text(story,ach)
+    if ach.strip() == "":
+        return
 
+    add_heading(story, "Achievements")
+
+    add_text(story, ach)
 
 # =====================================================
 # LANGUAGES
 # =====================================================
 
-def language_section(story,form):
+def language_section(story, form):
 
-    lang=form.get("languages","")
-
-    if lang=="":
-
+    if not include_section(form, "include_languages"):
         return
 
-    add_heading(story,"Languages")
+    lang = form.get("languages", "")
 
-    add_text(story,lang)
+    if lang.strip() == "":
+        return
+
+    add_heading(story, "Languages")
+
+    add_text(story, lang)
   # =====================================================
 # ATS OPTIMIZED TEMPLATE
 # =====================================================
@@ -1479,3 +1488,51 @@ def cyber_template(form):
     buffer.seek(0)
 
     return buffer
+
+# =====================================================
+# GENERATE RESUME
+# =====================================================
+
+def generate_resume(form):
+
+    template = form.get("template_style", "ats")
+
+    if template == "modern_blue":
+        return modern_blue_template(form)
+
+    elif template == "professional_black":
+        return professional_black_template(form)
+
+    elif template == "minimal":
+        return minimal_clean_template(form)
+
+    elif template == "executive":
+        return executive_template(form)
+
+    elif template == "creative":
+        return creative_template(form)
+
+    elif template == "ats":
+        return ats_template(form)
+
+    elif template == "fresher":
+        return fresher_template(form)
+
+    elif template == "student":
+        return student_template(form)
+
+    elif template == "experienced":
+        return experienced_template(form)
+
+    elif template == "software":
+        return software_template(form)
+
+    elif template == "datascience":
+        return data_science_template(form)
+
+    elif template == "cyber":
+        return cyber_template(form)
+
+    else:
+        return ats_template(form)
+        

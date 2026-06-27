@@ -11,7 +11,7 @@ from ai import (
     get_resume_suggestions,
     rewrite_resume_section
 )
-from ats import calculate_basic_ats, normalize_ai_result
+from ats import calculate_basic_ats
 from utils import resume_filename
 
 
@@ -97,34 +97,38 @@ def ats_checker():
                 if api_key:
                     resume_text = text[: app.config.get("ATS_MAX_RESUME_CHARS", 15000)]
 
-                    ai_json = analyze_resume_json(api_key, resume_text, job_role, job_description)
-                    ai_result = normalize_ai_result(ai_json)
-
-                    if not ai_result["ats_score"]:
-                        markdown_feedback = analyze_resume(api_key, resume_text, job_role, job_description)
-                        ai_result["deep_analysis"] = markdown_feedback
-                        ai_result["job_fit_summary"] = "Gemini returned text analysis, but JSON score extraction failed."
+                    ai_result = analyze_resume_json(
+                        api_key,
+                        resume_text,
+                        job_role,
+                        job_description
+                    )
 
                     results = {
-                        "score": ai_result["ats_score"],
-                        "target_role": ai_result["target_role"] or job_role,
-                        "keyword_match": ai_result["keyword_match"],
-                        "interview_chance": ai_result["interview_chance"],
+                        "score": ai_result.get("ats_score", 0),
+                        "target_role": ai_result.get("target_role") or job_role,
+                        "keyword_match": ai_result.get("keyword_match", 0),
+                        "interview_chance": ai_result.get("interview_chance", 0),
+
                         "contact": basic_result.get("contact", {}),
                         "sections": basic_result.get("sections", {}),
-                        "keywords_found": ai_result["found_keywords"],
-                        "keywords_missing": ai_result["missing_keywords"],
-                        "skill_score": ai_result["skills_score"],
-                        "education_score": ai_result["education_score"],
-                        "experience_score": ai_result["experience_score"],
-                        "projects_score": ai_result["projects_score"],
-                        "format_score": ai_result["format_score"],
-                        "strengths": ai_result["strengths"],
-                        "weaknesses": ai_result["weaknesses"],
-                        "recommendations": ai_result["recommendations"],
-                        "job_fit_summary": ai_result["job_fit_summary"],
-                        "recruiter_opinion": ai_result["recruiter_opinion"],
-                        "ai_feedback": ai_result["deep_analysis"],
+
+                        "keywords_found": ai_result.get("found_keywords", []),
+                        "keywords_missing": ai_result.get("missing_keywords", []),
+
+                        "skill_score": ai_result.get("skills_score", 0),
+                        "education_score": ai_result.get("education_score", 0),
+                        "experience_score": ai_result.get("experience_score", 0),
+                        "projects_score": ai_result.get("projects_score", 0),
+                        "format_score": ai_result.get("format_score", 0),
+
+                        "strengths": ai_result.get("strengths", []),
+                        "weaknesses": ai_result.get("weaknesses", []),
+                        "recommendations": ai_result.get("recommendations", []),
+                        "job_fit_summary": ai_result.get("job_fit_summary", ""),
+                        "recruiter_opinion": ai_result.get("recruiter_opinion", ""),
+                        "ai_feedback": ai_result.get("deep_analysis", ""),
+
                         "resume_text": resume_text,
                         "job_role": job_role
                     }

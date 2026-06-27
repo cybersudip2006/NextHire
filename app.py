@@ -1,3 +1,4 @@
+```python
 import os
 import pdfplumber
 
@@ -8,6 +9,7 @@ from models import db, ResumeData
 from pdf_generator import generate_resume
 from ai import analyze_resume, get_resume_suggestions
 from ats import calculate_ats
+from utils import resume_filename
 
 
 app = Flask(__name__)
@@ -27,31 +29,41 @@ def index():
 @app.route("/builder", methods=["GET", "POST"])
 def builder():
     if request.method == "POST":
-        name = request.form.get("name", "")[:100]
-        email = request.form.get("email", "")
-        phone_code = request.form.get("country_code", "")
-        phone_num = request.form.get("phone", "")
+        name = request.form.get("name", "").strip()[: app.config.get("MAX_NAME_LENGTH", 100)]
+        email = request.form.get("email", "").strip()
+        phone_code = request.form.get("country_code", "").strip()
+        phone_num = request.form.get("phone", "").strip()
         full_phone = f"{phone_code} {phone_num}".strip()
+        template_style = request.form.get("template_style", app.config.get("DEFAULT_TEMPLATE", "ats"))
 
-        if name and email and phone_num:
-            new_resume = ResumeData(
-                name=name,
-                email=email,
-                phone=full_phone
+        try:
+            if name and email and phone_num:
+                new_resume = ResumeData(
+                    name=name,
+                    email=email,
+                    phone=full_phone,
+                    template_style=template_style,
+                    filename=resume_filename(name)
+                )
+
+                db.session.add(new_resume)
+                db.session.commit()
+
+        except Exception:
+            db.session.rollback()
+
+        try:
+            pdf_buffer = generate_resume(request.form)
+
+            return send_file(
+                pdf_buffer,
+                as_attachment=True,
+                download_name=resume_filename(name),
+                mimetype="application/pdf"
             )
-            db.session.add(new_resume)
-            db.session.commit()
 
-        pdf_buffer = generate_resume(request.form)
-
-        safe_name = name.replace(" ", "_") if name else "NextHire"
-
-        return send_file(
-            pdf_buffer,
-            as_attachment=True,
-            download_name=f"{safe_name}_Resume.pdf",
-            mimetype="application/pdf"
-        )
+        except Exception as e:
+            return f"Resume generation error: {str(e)}", 500
 
     return render_template("builder.html")
 
@@ -66,42 +78,55 @@ def ats_checker():
 
         file = request.files["resume_pdf"]
 
-        if file.filename != "":
-            try:
-                text = ""
+        if file.filename == "":
+            return redirect(request.url)
 
-                with pdfplumber.open(file) as pdf:
-                    for page in pdf.pages:
-                        text += (page.extract_text() or "") + "\n"
+        try:
+            text = ""
 
-                if not text.strip():
-                    results = {
-                        "ai_feedback": "Error: Could not read text from this PDF. Please upload a text-based PDF."
-                    }
-                else:
-                    local_result = calculate_ats(text)
+            with pdfplumber.open(file) as pdf:
+                for page in pdf.pages:
+                    text += (page.extract_text() or "") + "\n"
 
-                    ai_feedback = analyze_resume(
-                        app.config["GEMINI_API_KEY"],
-                        text[:app.config.get("ATS_MAX_RESUME_CHARS", 15000)]
-                    )
-
-                    results = {
-                        "score": local_result["ats_score"],
-                        "contact": local_result["contact"],
-                        "sections": local_result["sections"],
-                        "keywords_found": local_result["found_keywords"],
-                        "keywords_missing": local_result["missing_keywords"],
-                        "skill_score": local_result["skill_score"],
-                        "education_score": local_result["education_score"],
-                        "experience_score": local_result["experience_score"],
-                        "ai_feedback": ai_feedback
-                    }
-
-            except Exception as e:
+            if not text.strip():
                 results = {
-                    "ai_feedback": f"System Error during analysis: {str(e)}"
+                    "ai_feedback": "Error: Could not read text from this PDF. Please upload a text-based PDF."
                 }
+
+            else:
+                local_result = calculate_ats(text)
+
+                api_key = app.config.get("GEMINI_API_KEY")
+
+                if api_key:
+                    ai_feedback = analyze_resume(
+                        api_key,
+                        text[: app.config.get("ATS_MAX_RESUME_CHARS", 15000)]
+                    )
+                else:
+                    ai_feedback = "Gemini API key is not configured. Local ATS analysis completed."
+
+                results = {
+                    "score": local_result.get("ats_score"),
+                    "contact": local_result.get("contact", {}),
+                    "sections": local_result.get("sections", {}),
+                    "keywords_found": local_result.get("found_keywords", []),
+                    "keywords_missing": local_result.get("missing_keywords", []),
+                    "skill_score": local_result.get("skill_score"),
+                    "education_score": local_result.get("education_score"),
+                    "experience_score": local_result.get("experience_score"),
+                    "format_score": local_result.get("format_score"),
+                    "action_verb_score": local_result.get("action_verb_score"),
+                    "strengths": local_result.get("strengths", []),
+                    "weaknesses": local_result.get("weaknesses", []),
+                    "recommendations": local_result.get("recommendations", []),
+                    "ai_feedback": ai_feedback
+                }
+
+        except Exception as e:
+            results = {
+                "ai_feedback": f"System Error during analysis: {str(e)}"
+            }
 
     return render_template("ats_checker.html", results=results)
 
@@ -111,25 +136,31 @@ def ai_suggestions():
     suggestions = None
 
     if request.method == "POST":
-        text_input = request.form.get("resume_text", "")
+        text_input = request.form.get("resume_text", "").strip()
 
-        if not text_input or len(text_input.strip()) < 20:
+        if not text_input or len(text_input) < 20:
             return render_template(
                 "ai_suggestions.html",
                 suggestions=["Please enter a longer resume text, at least 20 characters."]
             )
 
         try:
-            response = get_resume_suggestions(
-                app.config["GEMINI_API_KEY"],
-                text_input
-            )
+            api_key = app.config.get("GEMINI_API_KEY")
 
-            suggestions = [
-                line.strip()
-                for line in response.split("\n")
-                if line.strip()
-            ]
+            if not api_key:
+                suggestions = ["Gemini API key is not configured on the server."]
+
+            else:
+                response = get_resume_suggestions(
+                    api_key,
+                    text_input
+                )
+
+                suggestions = [
+                    line.strip()
+                    for line in response.split("\n")
+                    if line.strip()
+                ]
 
         except Exception as e:
             suggestions = [f"System Error: {str(e)}"]
@@ -138,4 +169,5 @@ def ai_suggestions():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=False)
+```

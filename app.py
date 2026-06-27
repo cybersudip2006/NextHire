@@ -1,4 +1,3 @@
-```python
 import os
 import pdfplumber
 
@@ -140,4 +139,3 @@ def ai_suggestions():
 
 if __name__ == "__main__":
     app.run(debug=True)
-```

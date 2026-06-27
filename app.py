@@ -37,7 +37,10 @@ def builder():
         phone_code = request.form.get("country_code", "").strip()
         phone_num = request.form.get("phone", "").strip()
         full_phone = f"{phone_code} {phone_num}".strip()
-        template_style = request.form.get("template_style", app.config.get("DEFAULT_TEMPLATE", "ats"))
+        template_style = request.form.get(
+            "template_style",
+            app.config.get("DEFAULT_TEMPLATE", "ats")
+        )
 
         try:
             if name and email and phone_num:
@@ -48,19 +51,29 @@ def builder():
                     template_style=template_style,
                     filename=resume_filename(name)
                 )
+
                 db.session.add(new_resume)
                 db.session.commit()
+
         except Exception:
             db.session.rollback()
 
         try:
-            pdf_buffer = generate_resume(request.form)
+            # IMPORTANT:
+            # request.form = text fields
+            # request.files = uploaded profile photo
+            pdf_buffer = generate_resume(
+                request.form,
+                request.files
+            )
+
             return send_file(
                 pdf_buffer,
                 as_attachment=True,
                 download_name=resume_filename(name),
                 mimetype="application/pdf"
             )
+
         except Exception as e:
             return f"Resume generation error: {str(e)}", 500
 
@@ -76,6 +89,7 @@ def ats_checker():
             return redirect(request.url)
 
         file = request.files["resume_pdf"]
+
         if file.filename == "":
             return redirect(request.url)
 
@@ -84,12 +98,16 @@ def ats_checker():
 
         try:
             text = ""
+
             with pdfplumber.open(file) as pdf:
                 for page in pdf.pages:
                     text += (page.extract_text() or "") + "\n"
 
             if not text.strip():
-                results = {"ai_feedback": "Error: Could not read text from this PDF. Please upload a text-based PDF."}
+                results = {
+                    "ai_feedback": "Error: Could not read text from this PDF. Please upload a text-based PDF."
+                }
+
             else:
                 basic_result = calculate_basic_ats(text)
                 api_key = app.config.get("GEMINI_API_KEY")
@@ -132,6 +150,7 @@ def ats_checker():
                         "resume_text": resume_text,
                         "job_role": job_role
                     }
+
                 else:
                     results = {
                         "score": 0,
@@ -151,7 +170,9 @@ def ats_checker():
                     }
 
         except Exception as e:
-            results = {"ai_feedback": f"System Error during analysis: {str(e)}"}
+            results = {
+                "ai_feedback": f"System Error during analysis: {str(e)}"
+            }
 
     return render_template("ats_checker.html", results=results)
 
@@ -207,15 +228,29 @@ def ai_suggestions():
         text_input = request.form.get("resume_text", "").strip()
 
         if not text_input or len(text_input) < 20:
-            return render_template("ai_suggestions.html", suggestions=["Please enter a longer resume text, at least 20 characters."])
+            return render_template(
+                "ai_suggestions.html",
+                suggestions=["Please enter a longer resume text, at least 20 characters."]
+            )
 
         try:
             api_key = app.config.get("GEMINI_API_KEY")
+
             if not api_key:
                 suggestions = ["Gemini API key is not configured on the server."]
+
             else:
-                response = get_resume_suggestions(api_key, text_input)
-                suggestions = [line.strip() for line in response.split("\n") if line.strip()]
+                response = get_resume_suggestions(
+                    api_key,
+                    text_input
+                )
+
+                suggestions = [
+                    line.strip()
+                    for line in response.split("\n")
+                    if line.strip()
+                ]
+
         except Exception as e:
             suggestions = [f"System Error: {str(e)}"]
 

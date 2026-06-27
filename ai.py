@@ -23,31 +23,154 @@ def _generate(api_key, prompt):
     return response.text if hasattr(response, "text") else "No AI response received."
 
 
-def extract_json(text):
+def _clean_json_text(text):
     if not text:
-        return {}
+        return ""
 
     text = text.strip()
 
-    code_block = re.search(r"```(?:json)?\s*(\{.*?\})\s*```", text, re.DOTALL)
-    if code_block:
-        text = code_block.group(1)
+    # Remove markdown code fences
+    text = re.sub(r"^```(?:json)?", "", text, flags=re.IGNORECASE).strip()
+    text = re.sub(r"```$", "", text).strip()
 
-    try:
-        return json.loads(text)
-    except Exception:
-        pass
-
+    # Extract from first { to last }
     start = text.find("{")
     end = text.rfind("}")
 
     if start != -1 and end != -1 and end > start:
+        text = text[start:end + 1]
+
+    # Remove trailing commas before } or ]
+    text = re.sub(r",\s*([}\]])", r"\1", text)
+
+    # Replace smart quotes
+    text = text.replace("“", '"').replace("”", '"').replace("’", "'")
+
+    return text
+
+
+def extract_json(text):
+    """
+    Robust JSON extraction:
+    1. Try direct JSON
+    2. Try cleaned JSON
+    3. Try markdown fenced JSON
+    4. Return {} if impossible
+    """
+
+    if not text:
+        return {}
+
+    candidates = []
+
+    candidates.append(text.strip())
+    candidates.append(_clean_json_text(text))
+
+    fenced = re.search(r"```(?:json)?\s*(\{.*?\})\s*```", text, re.DOTALL | re.IGNORECASE)
+    if fenced:
+        candidates.append(_clean_json_text(fenced.group(1)))
+
+    for candidate in candidates:
+        if not candidate:
+            continue
+
         try:
-            return json.loads(text[start:end + 1])
+            return json.loads(candidate)
         except Exception:
-            return {}
+            continue
 
     return {}
+
+
+def extract_score_from_text(text):
+    """
+    Fallback parser if Gemini returns markdown instead of JSON.
+    """
+
+    if not text:
+        return {}
+
+    def find_number(pattern, default=0):
+        match = re.search(pattern, text, re.IGNORECASE)
+        if not match:
+            return default
+        try:
+            return float(match.group(1))
+        except Exception:
+            return default
+
+    ats_score = find_number(r"ATS\s*Score[^0-9]*(\d+(?:\.\d+)?)", 0)
+    keyword_match = find_number(r"Keyword\s*Match[^0-9]*(\d+(?:\.\d+)?)", 0)
+    interview_chance = find_number(r"Interview\s*Chance[^0-9]*(\d+(?:\.\d+)?)", 0)
+
+    # Extract bullet-like missing keywords
+    missing_keywords = []
+    missing_section = re.search(
+        r"Missing[^#]*Keywords(.*?)(?:\n#|\n[A-Z][A-Za-z ]{3,}:|$)",
+        text,
+        re.IGNORECASE | re.DOTALL
+    )
+
+    if missing_section:
+        lines = missing_section.group(1).splitlines()
+        for line in lines:
+            line = line.strip(" -*•\t")
+            if line and len(line) < 60:
+                missing_keywords.append(line)
+
+    return {
+        "ats_score": ats_score,
+        "keyword_match": keyword_match,
+        "interview_chance": interview_chance,
+        "missing_keywords": missing_keywords[:20],
+        "deep_analysis": text
+    }
+
+
+def ensure_ai_schema(data, raw_text="", job_role=""):
+    """
+    Guarantees every field exists even if Gemini output is incomplete.
+    """
+
+    if not isinstance(data, dict):
+        data = {}
+
+    fallback = extract_score_from_text(raw_text)
+
+    def num(key, default=0):
+        value = data.get(key, fallback.get(key, default))
+        try:
+            return float(value)
+        except Exception:
+            return default
+
+    def arr(key):
+        value = data.get(key, fallback.get(key, []))
+        return value if isinstance(value, list) else []
+
+    def txt(key, default=""):
+        value = data.get(key, fallback.get(key, default))
+        return value if isinstance(value, str) else default
+
+    return {
+        "target_role": txt("target_role", job_role),
+        "ats_score": num("ats_score"),
+        "skills_score": num("skills_score"),
+        "education_score": num("education_score"),
+        "experience_score": num("experience_score"),
+        "projects_score": num("projects_score"),
+        "format_score": num("format_score"),
+        "keyword_match": num("keyword_match"),
+        "interview_chance": num("interview_chance"),
+        "found_keywords": arr("found_keywords"),
+        "missing_keywords": arr("missing_keywords"),
+        "strengths": arr("strengths"),
+        "weaknesses": arr("weaknesses"),
+        "recommendations": arr("recommendations"),
+        "job_fit_summary": txt("job_fit_summary", ""),
+        "recruiter_opinion": txt("recruiter_opinion", ""),
+        "deep_analysis": txt("deep_analysis", raw_text)
+    }
 
 
 def analyze_resume_json(api_key, resume_text, job_role="", job_description=""):
@@ -68,11 +191,13 @@ JOB DESCRIPTION / REQUIRED SKILLS:
 RESUME TEXT:
 {resume_text}
 
-Return ONLY valid JSON.
-Do not use markdown.
-Do not add explanation outside JSON.
+Return RAW JSON ONLY.
+No markdown.
+No ```json.
+No explanation outside JSON.
+The first character must be {{ and the last character must be }}.
 
-Use this exact JSON structure:
+Use exactly this JSON structure:
 
 {{
   "target_role": "{job_role}",
@@ -106,8 +231,12 @@ Rules:
 - If experience/projects are missing, score accordingly.
 """
 
-    response_text = _generate(api_key, prompt)
-    return extract_json(response_text)
+    raw_response = _generate(api_key, prompt)
+
+    data = extract_json(raw_response)
+
+    # If Gemini still returns text, fallback parser fills whatever it can.
+    return ensure_ai_schema(data, raw_response, job_role)
 
 
 def analyze_resume(api_key, resume_text, job_role="", job_description=""):
@@ -148,12 +277,6 @@ Resume:
 
 
 def rewrite_resume_section(api_key, resume_text, job_role="", section_type="summary"):
-    """
-    Rewrites one selected resume section using Gemini.
-    section_type values:
-    summary, experience, projects, skills, education, full
-    """
-
     section_labels = {
         "summary": "Professional Summary",
         "experience": "Experience",

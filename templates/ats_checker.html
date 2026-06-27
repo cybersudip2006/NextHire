@@ -140,6 +140,33 @@
             <p style="line-height:1.8;">{{ results.recruiter_opinion }}</p>
         </div>
         {% endif %}
+
+        <div class="results-card ai-rewriter-card">
+            <h3 style="color:var(--primary);">✨ AI Resume Rewriter</h3>
+            <p style="color:#64748b;margin-bottom:18px;">
+                Rewrite selected resume sections for the target role using Gemini.
+            </p>
+
+            <input type="hidden" id="rewrite-job-role" value="{{ results.job_role or results.target_role }}">
+            <textarea id="rewrite-resume-text" style="display:none;">{{ results.resume_text }}</textarea>
+
+            <div class="rewrite-buttons">
+                <button type="button" class="btn rewrite-btn" data-section="summary">✨ Improve Professional Summary</button>
+                <button type="button" class="btn rewrite-btn" data-section="experience">💼 Improve Experience</button>
+                <button type="button" class="btn rewrite-btn" data-section="projects">🚀 Improve Projects</button>
+                <button type="button" class="btn rewrite-btn" data-section="skills">🛠 Improve Skills</button>
+                <button type="button" class="btn rewrite-btn" data-section="education">📚 Improve Education</button>
+                <button type="button" class="btn rewrite-btn" data-section="full">📄 Rewrite Entire Resume</button>
+            </div>
+
+            <div id="rewrite-output" class="rewrite-output" style="display:none;">
+                <div class="rewrite-output-header">
+                    <h4 id="rewrite-output-title">Rewritten Output</h4>
+                    <button type="button" class="btn btn-outline" id="copy-rewrite-btn">Copy</button>
+                </div>
+                <div id="rewrite-output-content"></div>
+            </div>
+        </div>
         {% endif %}
 
         <div class="results-card">

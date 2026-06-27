@@ -147,6 +147,64 @@ Resume:
     return _generate(api_key, prompt)
 
 
+def rewrite_resume_section(api_key, resume_text, job_role="", section_type="summary"):
+    """
+    Rewrites one selected resume section using Gemini.
+    section_type values:
+    summary, experience, projects, skills, education, full
+    """
+
+    section_labels = {
+        "summary": "Professional Summary",
+        "experience": "Experience",
+        "projects": "Projects",
+        "skills": "Skills",
+        "education": "Education",
+        "full": "Entire Resume"
+    }
+
+    section_name = section_labels.get(section_type, "Professional Summary")
+    job_role = job_role or "General Job Role"
+
+    prompt = f"""
+You are a professional resume writer and ATS optimization expert.
+
+Target Job Role:
+{job_role}
+
+Task:
+Rewrite ONLY this resume section: {section_name}
+
+Resume Text:
+{resume_text}
+
+Rules:
+- Make it ATS-friendly.
+- Use role-specific keywords naturally.
+- Use strong action verbs.
+- Use measurable impact where possible.
+- Do not invent fake companies, fake degrees, fake certificates, or fake achievements.
+- If details are missing, write a polished version using only available information.
+- Keep it concise and recruiter-friendly.
+- Return only the rewritten content.
+- Do not add markdown heading unless rewriting the entire resume.
+"""
+
+    if section_type == "full":
+        prompt += """
+For the full resume rewrite, return a clean resume structure with these headings where relevant:
+Professional Summary
+Skills
+Experience
+Projects
+Education
+Certifications
+Achievements
+"""
+
+    return _generate(api_key, prompt)
+
+
 def get_resume_suggestions(api_key, resume_text):
     prompt = f"""
 You are a senior resume reviewer.

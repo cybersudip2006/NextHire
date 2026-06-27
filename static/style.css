@@ -411,3 +411,168 @@ footer p{color:#cbd5e1;margin:6px 0;}
     .hero-buttons{flex-direction:column;}
     .template-grid{grid-template-columns:1fr;}
 }
+
+/* ===========================================================
+   LIVE PREVIEW TEMPLATE THEMES
+   Added for template-wise preview styling
+=========================================================== */
+
+.preview-paper{
+    transition: all .35s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Modern Blue */
+.preview-paper.template-modern_blue{
+    border-top:18px solid #2563eb;
+    background:#ffffff;
+}
+
+.preview-paper.template-modern_blue h2{
+    color:#2563eb;
+}
+
+/* Professional Black */
+.preview-paper.template-professional_black{
+    border-top:18px solid #111827;
+    background:#ffffff;
+}
+
+.preview-paper.template-professional_black h2,
+.preview-paper.template-professional_black h4{
+    color:#111827;
+}
+
+/* Minimal Clean */
+.preview-paper.template-minimal{
+    border-top:7px solid #059669;
+    background:#ffffff;
+    box-shadow:inset 0 0 0 1px #d1fae5, 0 10px 30px rgba(5,150,105,.12);
+}
+
+.preview-paper.template-minimal h2{
+    color:#059669;
+}
+
+/* Executive */
+.preview-paper.template-executive{
+    border-left:18px solid #7c3aed;
+    background:#ffffff;
+}
+
+.preview-paper.template-executive h2{
+    color:#7c3aed;
+}
+
+/* Creative */
+.preview-paper.template-creative{
+    border-left:18px solid #ea580c;
+    background:#fff7ed;
+}
+
+.preview-paper.template-creative h2{
+    color:#ea580c;
+}
+
+.preview-paper.template-creative h4{
+    color:#9a3412;
+}
+
+/* ATS Optimized */
+.preview-paper.template-ats{
+    border:2px solid #2563eb;
+    box-shadow:none;
+    background:#ffffff;
+}
+
+.preview-paper.template-ats h2{
+    color:#111827;
+}
+
+/* Fresher */
+.preview-paper.template-fresher{
+    border-top:18px solid #06b6d4;
+    background:#f0fdff;
+}
+
+.preview-paper.template-fresher h2{
+    color:#0891b2;
+}
+
+/* Experienced */
+.preview-paper.template-experienced{
+    border-left:18px solid #111827;
+    background:#ffffff;
+}
+
+.preview-paper.template-experienced h2{
+    color:#111827;
+}
+
+/* Software Developer */
+.preview-paper.template-software{
+    border-top:18px solid #2563eb;
+    background:#f8fbff;
+}
+
+.preview-paper.template-software h2{
+    color:#2563eb;
+}
+
+/* Data Science / AI */
+.preview-paper.template-datascience{
+    border-top:18px solid #7c3aed;
+    background:#faf5ff;
+}
+
+.preview-paper.template-datascience h2{
+    color:#7c3aed;
+}
+
+/* Cyber Security */
+.preview-paper.template-cyber{
+    border-top:18px solid #ea580c;
+    background:#fff7ed;
+}
+
+.preview-paper.template-cyber h2{
+    color:#ea580c;
+}
+
+/* Student Resume */
+.preview-paper.template-student{
+    border-top:18px solid #059669;
+    background:#f0fdf4;
+}
+
+.preview-paper.template-student h2{
+    color:#059669;
+}
+
+/* Preview section order hint */
+.preview-paper.template-experienced #preview-experience,
+.preview-paper.template-software #preview-projects,
+.preview-paper.template-cyber #preview-skills,
+.preview-paper.template-datascience #preview-skills{
+    font-weight:600;
+}
+
+/* Mobile preview safety */
+@media(max-width:768px){
+    .preview-paper.template-executive,
+    .preview-paper.template-creative,
+    .preview-paper.template-experienced{
+        border-left-width:10px;
+    }
+
+    .preview-paper.template-modern_blue,
+    .preview-paper.template-professional_black,
+    .preview-paper.template-software,
+    .preview-paper.template-datascience,
+    .preview-paper.template-cyber,
+    .preview-paper.template-student,
+    .preview-paper.template-fresher{
+        border-top-width:12px;
+    }
+}

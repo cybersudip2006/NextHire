@@ -1064,6 +1064,25 @@ submitted=true;
 });
 
 });
+/* ======================================================
+   DYNAMIC RESUME SECTIONS
+====================================================== */
+
+document.querySelectorAll(".section-toggle").forEach(toggle => {
+
+    toggle.addEventListener("change", function(){
+
+        const section =
+        document.getElementById(this.dataset.section);
+
+        if(!section) return;
+
+        section.style.display =
+        this.checked ? "block" : "none";
+
+    });
+
+});
 
 /* ==========================================
    END

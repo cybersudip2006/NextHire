@@ -576,3 +576,61 @@ footer p{color:#cbd5e1;margin:6px 0;}
         border-top-width:12px;
     }
 }
+
+/* ===========================================================
+   AI RESUME REWRITER
+=========================================================== */
+
+.ai-rewriter-card{
+    border:1px solid #dbeafe;
+}
+
+.rewrite-buttons{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
+    gap:14px;
+    margin-top:18px;
+}
+
+.rewrite-btn{
+    width:100%;
+    text-align:center;
+    padding:14px 18px;
+}
+
+.rewrite-output{
+    margin-top:28px;
+    background:#f8fbff;
+    border:1px solid #dbeafe;
+    border-radius:18px;
+    padding:22px;
+}
+
+.rewrite-output-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:14px;
+    margin-bottom:16px;
+}
+
+#rewrite-output-title{
+    color:var(--primary);
+}
+
+#rewrite-output-content{
+    white-space:pre-wrap;
+    line-height:1.8;
+    color:#1e293b;
+    background:white;
+    border-radius:14px;
+    padding:18px;
+    border:1px solid #e5e7eb;
+}
+
+@media(max-width:600px){
+    .rewrite-output-header{
+        flex-direction:column;
+        align-items:stretch;
+    }
+}

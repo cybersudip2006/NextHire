@@ -5,12 +5,23 @@
 <div class="container">
     <h2 style="text-align:center;color:var(--primary);">ATS Score Checker</h2>
     <p style="text-align:center;color:#64748b;margin-bottom:30px;">
-        Upload a PDF resume and get ATS score, keyword analysis, section checks, and deep AI feedback.
+        Upload a PDF resume and get job-specific ATS score, keyword match, role gap analysis, and deep Gemini feedback.
     </p>
 
     <div class="upload-card">
         <form method="POST" enctype="multipart/form-data">
+
             <div class="form-group">
+                <label>Target Job Role *</label>
+                <input type="text" name="job_role" placeholder="Example: Cyber Security Analyst, Python Developer, Data Analyst" required>
+            </div>
+
+            <div class="form-group" style="margin-top:18px;">
+                <label>Job Description / Required Skills (Optional but Recommended)</label>
+                <textarea name="job_description" rows="7" placeholder="Paste job description here. Example: SIEM, Splunk, Incident Response, Linux, Python, Network Security..."></textarea>
+            </div>
+
+            <div class="form-group" style="margin-top:18px;">
                 <label>Upload PDF Resume</label>
                 <input type="file" name="resume_pdf" accept=".pdf" required>
             </div>
@@ -20,11 +31,25 @@
     </div>
 
     {% if results %}
-        {% if results.score %}
+        {% if results.score is defined %}
         <div class="ats-score-card">
             <h3>ATS Score</h3>
             <div class="ats-score-number">{{ results.score }}/10</div>
-            <p>Resume compatibility score</p>
+            <p>
+                {% if results.target_role %}
+                    Target Role: {{ results.target_role }}
+                {% else %}
+                    Job-specific resume compatibility score
+                {% endif %}
+            </p>
+
+            {% if results.keyword_match is defined %}
+            <p>Keyword Match: {{ results.keyword_match }}%</p>
+            {% endif %}
+
+            {% if results.interview_chance is defined %}
+            <p>Estimated Interview Chance: {{ results.interview_chance }}%</p>
+            {% endif %}
         </div>
 
         <div class="result-grid">
@@ -44,28 +69,77 @@
             </div>
 
             <div class="result-box">
-                <h4>Sub Scores</h4>
+                <h4>Role-Based Sub Scores</h4>
                 <p>Skills: {{ results.skill_score }}/10</p>
                 <p>Education: {{ results.education_score }}/10</p>
                 <p>Experience: {{ results.experience_score }}/10</p>
+                <p>Projects: {{ results.projects_score }}/10</p>
+                <p>Formatting: {{ results.format_score }}/10</p>
             </div>
         </div>
 
+        {% if results.job_fit_summary %}
         <div class="results-card">
-            <h3 style="color:var(--primary);">Found Keywords</h3>
+            <h3 style="color:var(--primary);">Job Fit Summary</h3>
+            <p style="line-height:1.8;">{{ results.job_fit_summary }}</p>
+        </div>
+        {% endif %}
+
+        <div class="results-card">
+            <h3 style="color:var(--primary);">Found Role-Specific Keywords</h3>
             <div class="keyword-list">
-                {% for item in results.keywords_found[:30] %}
+                {% for item in results.keywords_found[:40] %}
                     <span class="keyword-pill">{{ item }}</span>
+                {% else %}
+                    <p>No strong role-specific keywords found.</p>
                 {% endfor %}
             </div>
 
-            <h3 style="color:var(--primary);margin-top:25px;">Missing Keywords</h3>
+            <h3 style="color:var(--primary);margin-top:25px;">Missing Role-Specific Keywords</h3>
             <div class="keyword-list">
                 {% for item in results.keywords_missing %}
                     <span class="keyword-pill missing-pill">{{ item }}</span>
+                {% else %}
+                    <p>No major missing keywords detected.</p>
                 {% endfor %}
             </div>
         </div>
+
+        <div class="result-grid">
+            <div class="result-box">
+                <h4>Strengths</h4>
+                {% for item in results.strengths %}
+                    <p>✅ {{ item }}</p>
+                {% else %}
+                    <p>No strengths returned.</p>
+                {% endfor %}
+            </div>
+
+            <div class="result-box">
+                <h4>Weaknesses</h4>
+                {% for item in results.weaknesses %}
+                    <p>⚠️ {{ item }}</p>
+                {% else %}
+                    <p>No major weaknesses returned.</p>
+                {% endfor %}
+            </div>
+
+            <div class="result-box">
+                <h4>Recommendations</h4>
+                {% for item in results.recommendations %}
+                    <p>💡 {{ item }}</p>
+                {% else %}
+                    <p>No recommendations returned.</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        {% if results.recruiter_opinion %}
+        <div class="results-card">
+            <h3 style="color:var(--primary);">Recruiter Opinion</h3>
+            <p style="line-height:1.8;">{{ results.recruiter_opinion }}</p>
+        </div>
+        {% endif %}
         {% endif %}
 
         <div class="results-card">

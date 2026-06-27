@@ -1,270 +1,148 @@
 import google.generativeai as genai
 
-# =====================================================
-# Configure Gemini
-# =====================================================
+
+GEMINI_MODEL = "models/gemini-2.5-flash"
+
 
 def configure_gemini(api_key):
-    """
-    Configure Gemini API.
-    """
-
     if not api_key:
         raise ValueError("Gemini API Key not found.")
-
     genai.configure(api_key=api_key)
 
 
-# =====================================================
-# Load Model
-# =====================================================
-
 def get_model():
-
-    return genai.GenerativeModel(
-        "models/gemini-2.5-flash"
-    )
+    return genai.GenerativeModel(GEMINI_MODEL)
 
 
-# =====================================================
-# AI Resume Suggestions
-# =====================================================
+def _generate(api_key, prompt):
+    configure_gemini(api_key)
+    model = get_model()
+    response = model.generate_content(prompt)
+    return response.text if hasattr(response, "text") else "No AI response received."
+
 
 def get_resume_suggestions(api_key, resume_text):
-
-    configure_gemini(api_key)
-
-    model = get_model()
-
     prompt = f"""
+You are a senior resume reviewer.
 
-You are a Senior Resume Reviewer.
-
-Analyze the following resume.
-
-Return your answer in Markdown.
-
-Include:
+Analyze this resume and return Markdown with:
 
 # Professional Summary
-
 # Skills Improvement
-
 # Experience Improvement
-
 # Project Improvement
-
 # Missing ATS Keywords
-
 # Grammar Issues
-
 # Recruiter Tips
+# Final Action Plan
 
 Resume:
-
 {resume_text}
-
 """
+    return _generate(api_key, prompt)
 
-    response = model.generate_content(prompt)
-
-    return response.text
-
-
-# =====================================================
-# ATS ANALYSIS
-# =====================================================
 
 def analyze_resume(api_key, resume_text):
-
-    configure_gemini(api_key)
-
-    model = get_model()
-
     prompt = f"""
+You are an expert ATS resume analyzer.
 
-You are an ATS Resume Analyzer.
-
-Analyze the following resume.
-
-Return ONLY markdown.
-
-Use this exact structure.
+Return ONLY Markdown using this exact structure:
 
 # ATS Score
-
 Give score out of 10.
 
 # Contact Information
-
-Tell whether Name, Email, Phone,
-LinkedIn and GitHub exist.
+Check Name, Email, Phone, LinkedIn, GitHub.
 
 # Missing Keywords
-
-List important missing keywords.
+List missing keywords.
 
 # Formatting
-
 Explain formatting problems.
 
 # Skills
-
 Analyze skills.
 
 # Experience
-
 Analyze experience.
 
 # Education
-
 Analyze education.
 
 # Recruiter Opinion
-
 Would you shortlist this candidate?
 
 # Interview Chance
-
 Give percentage.
 
 # Final Suggestions
-
-Provide detailed improvements.
+Give detailed improvements.
 
 Resume:
-
 {resume_text}
-
 """
+    return _generate(api_key, prompt)
 
-    response = model.generate_content(prompt)
-
-    return response.text
-
-
-# =====================================================
-# Rewrite Professional Summary
-# =====================================================
 
 def rewrite_summary(api_key, summary):
-
-    configure_gemini(api_key)
-
-    model = get_model()
-
     prompt = f"""
-
-Rewrite this professional summary.
-
-Make it:
-
-Professional
-
-ATS Friendly
-
-Impactful
-
-Less than 120 words.
+Rewrite this professional summary to be professional, ATS-friendly,
+impactful, and less than 120 words.
 
 Summary:
-
 {summary}
-
 """
+    return _generate(api_key, prompt)
 
-    response = model.generate_content(prompt)
-
-    return response.text
-
-
-# =====================================================
-# Improve Projects
-# =====================================================
 
 def improve_project(api_key, project):
-
-    configure_gemini(api_key)
-
-    model = get_model()
-
     prompt = f"""
-
-Rewrite this software project.
-
-Use action verbs.
-
-Mention technologies.
-
-Mention measurable impact.
+Rewrite this project using action verbs, technologies, and measurable impact.
 
 Project:
-
 {project}
-
 """
+    return _generate(api_key, prompt)
 
-    response = model.generate_content(prompt)
-
-    return response.text
-
-
-# =====================================================
-# Suggest Skills
-# =====================================================
 
 def suggest_skills(api_key, domain):
-
-    configure_gemini(api_key)
-
-    model = get_model()
-
     prompt = f"""
-
-Suggest the top 30 ATS-friendly technical skills
-for this career field.
-
-Domain:
+Suggest the top 30 ATS-friendly technical skills for this career field:
 
 {domain}
-
 """
-
-    response = model.generate_content(prompt)
-
-    return response.text
+    return _generate(api_key, prompt)
 
 
-# =====================================================
-# Cover Letter Generator
-# =====================================================
+def match_job_description(api_key, resume_text, job_description):
+    prompt = f"""
+Compare this resume against the job description.
+
+Return:
+- Match percentage
+- Missing keywords
+- Skills to add
+- Summary rewrite
+- Project improvements
+- Final action plan
+
+Resume:
+{resume_text}
+
+Job Description:
+{job_description}
+"""
+    return _generate(api_key, prompt)
+
 
 def generate_cover_letter(api_key, name, job_role, company):
-
-    configure_gemini(api_key)
-
-    model = get_model()
-
     prompt = f"""
-
 Write a professional cover letter.
 
-Candidate:
+Candidate: {name}
+Job Role: {job_role}
+Company: {company}
 
-{name}
-
-Job Role:
-
-{job_role}
-
-Company:
-
-{company}
-
-Keep it professional.
-
+Keep it concise and professional.
 """
-
-    response = model.generate_content(prompt)
-
-    return response.text
+    return _generate(api_key, prompt)

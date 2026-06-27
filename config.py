@@ -2,15 +2,10 @@ import os
 
 
 class Config:
-    """Application Configuration"""
+    """NextHire application configuration."""
 
-    # Flask
-    SECRET_KEY = os.environ.get(
-        "FLASK_SECRET_KEY",
-        "nexthire_super_secret_key"
-    )
+    SECRET_KEY = os.environ.get("FLASK_SECRET_KEY", "nexthire_super_secret_key")
 
-    # Database
     SQLALCHEMY_DATABASE_URI = os.environ.get(
         "DATABASE_URL",
         "sqlite:///nexthire.db"
@@ -18,26 +13,21 @@ class Config:
 
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
-    # Gemini API
     GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
 
-    # Upload Folder
-    UPLOAD_FOLDER = "uploads"
+    UPLOAD_FOLDER = os.environ.get("UPLOAD_FOLDER", "uploads")
 
-    # Maximum upload size (10 MB)
     MAX_CONTENT_LENGTH = 10 * 1024 * 1024
 
-    # Allowed resume extensions
-    ALLOWED_EXTENSIONS = {
-        "pdf",
-        "png",
-        "jpg",
-        "jpeg"
-    }
+    ALLOWED_EXTENSIONS = {"pdf", "png", "jpg", "jpeg"}
 
-    # Resume Settings
     MAX_NAME_LENGTH = 100
     MAX_ADDRESS_LENGTH = 250
 
-    # ATS
     ATS_MAX_RESUME_CHARS = 15000
+
+    DEFAULT_TEMPLATE = "ats"
+
+    PDF_MAX_PAGES = 5
+    MAX_SKILLS = 30
+    MAX_PROJECTS = 10

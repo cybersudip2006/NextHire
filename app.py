@@ -1,11 +1,16 @@
 import pdfplumber
 
-from flask import Flask, render_template, request, send_file, redirect
+from flask import Flask, render_template, request, send_file, redirect, jsonify
 
 from config import Config
 from models import db, ResumeData
 from pdf_generator import generate_resume
-from ai import analyze_resume_json, analyze_resume, get_resume_suggestions
+from ai import (
+    analyze_resume_json,
+    analyze_resume,
+    get_resume_suggestions,
+    rewrite_resume_section
+)
 from ats import calculate_basic_ats, normalize_ai_result
 from utils import resume_filename
 
@@ -119,7 +124,9 @@ def ats_checker():
                         "recommendations": ai_result["recommendations"],
                         "job_fit_summary": ai_result["job_fit_summary"],
                         "recruiter_opinion": ai_result["recruiter_opinion"],
-                        "ai_feedback": ai_result["deep_analysis"]
+                        "ai_feedback": ai_result["deep_analysis"],
+                        "resume_text": resume_text,
+                        "job_role": job_role
                     }
                 else:
                     results = {
@@ -134,13 +141,58 @@ def ats_checker():
                         "experience_score": 0,
                         "projects_score": 0,
                         "format_score": 0,
-                        "ai_feedback": "Gemini API key is not configured. Job-specific AI ATS analysis cannot run."
+                        "ai_feedback": "Gemini API key is not configured. Job-specific AI ATS analysis cannot run.",
+                        "resume_text": text[: app.config.get("ATS_MAX_RESUME_CHARS", 15000)],
+                        "job_role": job_role
                     }
 
         except Exception as e:
             results = {"ai_feedback": f"System Error during analysis: {str(e)}"}
 
     return render_template("ats_checker.html", results=results)
+
+
+@app.route("/rewrite-section", methods=["POST"])
+def rewrite_section():
+    try:
+        api_key = app.config.get("GEMINI_API_KEY")
+
+        if not api_key:
+            return jsonify({
+                "success": False,
+                "error": "Gemini API key is not configured on the server."
+            }), 400
+
+        data = request.get_json(silent=True) or {}
+
+        resume_text = (data.get("resume_text") or "").strip()
+        job_role = (data.get("job_role") or "").strip()
+        section_type = (data.get("section_type") or "summary").strip()
+
+        if len(resume_text) < 20:
+            return jsonify({
+                "success": False,
+                "error": "Resume text is too short for rewriting."
+            }), 400
+
+        rewritten = rewrite_resume_section(
+            api_key,
+            resume_text[: app.config.get("ATS_MAX_RESUME_CHARS", 15000)],
+            job_role,
+            section_type
+        )
+
+        return jsonify({
+            "success": True,
+            "section_type": section_type,
+            "rewritten": rewritten
+        })
+
+    except Exception as e:
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 500
 
 
 @app.route("/ai-suggestions", methods=["GET", "POST"])

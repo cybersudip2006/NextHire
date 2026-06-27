@@ -3,6 +3,13 @@ import os
 
 from flask import send_file
 
+try:
+    from PIL import Image as PILImage, ImageDraw, ImageOps
+except Exception:
+    PILImage = None
+    ImageDraw = None
+    ImageOps = None
+
 from reportlab.lib.pagesizes import A4
 from reportlab.lib import colors
 from reportlab.lib.units import inch
@@ -200,6 +207,146 @@ def add_profile_photo(story,image_path):
         )
 
 
+
+# =====================================================
+# CIRCULAR PROFILE PHOTO SUPPORT
+# =====================================================
+
+def photo_enabled(form):
+
+    value = form.get("include_photo")
+
+    if value is None:
+        return True
+
+    return str(value).strip().lower() in ("true", "1", "yes", "on")
+
+
+def create_circular_photo(form, files, size=1.2*inch):
+
+    if not files:
+        return None
+
+    if not photo_enabled(form):
+        return None
+
+    uploaded = files.get("profile_photo")
+
+    if not uploaded or uploaded.filename == "":
+        return None
+
+    if PILImage is None:
+        return None
+
+    try:
+        uploaded.stream.seek(0)
+
+        image = PILImage.open(uploaded.stream)
+
+        image = ImageOps.exif_transpose(image)
+
+        image = image.convert("RGBA")
+
+        image = ImageOps.fit(
+            image,
+            (700, 700),
+            method=PILImage.Resampling.LANCZOS,
+            centering=(0.5, 0.5)
+        )
+
+        mask = PILImage.new("L", (700, 700), 0)
+
+        draw = ImageDraw.Draw(mask)
+
+        draw.ellipse((0, 0, 700, 700), fill=255)
+
+        image.putalpha(mask)
+
+        buffer = io.BytesIO()
+
+        image.save(buffer, format="PNG", optimize=True)
+
+        buffer.seek(0)
+
+        return Image(
+            buffer,
+            width=size,
+            height=size
+        )
+
+    except Exception:
+        return None
+
+
+def add_template_photo(story, form, files=None, template="default"):
+
+    if template == "ats":
+        return
+
+    if not files:
+        return
+
+    if template == "creative":
+        size = 1.65 * inch
+
+    elif template == "executive":
+        size = 1.35 * inch
+
+    else:
+        size = 1.15 * inch
+
+    photo = create_circular_photo(form, files, size)
+
+    if not photo:
+        return
+
+    if template == "creative":
+
+        table = Table(
+            [[photo]],
+            colWidths=[500]
+        )
+
+        table.setStyle(TableStyle([
+            ("ALIGN", (0,0), (-1,-1), "CENTER"),
+            ("BOTTOMPADDING", (0,0), (-1,-1), 14)
+        ]))
+
+        story.append(table)
+
+        return
+
+    if template == "executive":
+
+        table = Table(
+            [[photo, ""]],
+            colWidths=[size + 10, 500 - size]
+        )
+
+        table.setStyle(TableStyle([
+            ("ALIGN", (0,0), (0,0), "LEFT"),
+            ("VALIGN", (0,0), (-1,-1), "TOP"),
+            ("BOTTOMPADDING", (0,0), (-1,-1), 10)
+        ]))
+
+        story.append(table)
+
+        return
+
+    table = Table(
+        [["", photo]],
+        colWidths=[500 - size, size]
+    )
+
+    table.setStyle(TableStyle([
+        ("ALIGN", (1,0), (1,0), "RIGHT"),
+        ("VALIGN", (0,0), (-1,-1), "TOP"),
+        ("BOTTOMPADDING", (0,0), (-1,-1), 10)
+    ]))
+
+    story.append(table)
+
+
 # =====================================================
 # DYNAMIC SECTION
 # =====================================================
@@ -378,7 +525,7 @@ def language_section(story, form):
 # ATS OPTIMIZED TEMPLATE
 # =====================================================
 
-def ats_template(form):
+def ats_template(form, files=None):
 
     document, buffer = create_document()
 
@@ -430,11 +577,13 @@ def ats_template(form):
 # MODERN BLUE TEMPLATE
 # =====================================================
 
-def modern_blue_template(form):
+def modern_blue_template(form, files=None):
 
     document, buffer = create_document()
 
     story=[]
+
+    add_template_photo(story, form, files, "modern_blue")
 
     style=styles["Heading1"]
 
@@ -498,11 +647,13 @@ def modern_blue_template(form):
 # PROFESSIONAL BLACK TEMPLATE
 # =====================================================
 
-def professional_black_template(form):
+def professional_black_template(form, files=None):
 
     document,buffer=create_document()
 
     story=[]
+
+    add_template_photo(story, form, files, "professional_black")
 
     style=styles["Heading1"]
 
@@ -573,11 +724,13 @@ def professional_black_template(form):
 # MINIMAL CLEAN TEMPLATE
 # =====================================================
 
-def minimal_clean_template(form):
+def minimal_clean_template(form, files=None):
 
     document, buffer = create_document()
 
     story = []
+
+    add_template_photo(story, form, files, "minimal")
 
     # -----------------------------
     # Name
@@ -702,11 +855,13 @@ def minimal_clean_template(form):
 # EXECUTIVE TEMPLATE
 # =====================================================
 
-def executive_template(form):
+def executive_template(form, files=None):
 
     document, buffer = create_document()
 
     story = []
+
+    add_template_photo(story, form, files, "executive")
 
     # -----------------------------------------
     # Name
@@ -799,11 +954,13 @@ def executive_template(form):
 # CREATIVE TEMPLATE
 # =====================================================
 
-def creative_template(form):
+def creative_template(form, files=None):
 
     document, buffer = create_document()
 
     story = []
+
+    add_template_photo(story, form, files, "creative")
 
     # --------------------------------------------
     # Name
@@ -900,11 +1057,13 @@ def creative_template(form):
 # FRESHER RESUME TEMPLATE
 # =====================================================
 
-def fresher_template(form):
+def fresher_template(form, files=None):
 
     document, buffer = create_document()
 
     story = []
+
+    add_template_photo(story, form, files, "fresher")
 
     title = styles["Title"]
 
@@ -976,11 +1135,13 @@ def fresher_template(form):
 # STUDENT RESUME TEMPLATE
 # =====================================================
 
-def student_template(form):
+def student_template(form, files=None):
 
     document, buffer = create_document()
 
     story = []
+
+    add_template_photo(story, form, files, "student")
 
     title = styles["Title"]
 
@@ -1084,11 +1245,13 @@ def student_template(form):
 # EXPERIENCED PROFESSIONAL TEMPLATE
 # =====================================================
 
-def experienced_template(form):
+def experienced_template(form, files=None):
 
     document, buffer = create_document()
 
     story = []
+
+    add_template_photo(story, form, files, "experienced")
 
     title = styles["Title"]
     title.textColor = COLORS["black"]
@@ -1169,11 +1332,13 @@ def experienced_template(form):
 # SOFTWARE DEVELOPER TEMPLATE
 # =====================================================
 
-def software_template(form):
+def software_template(form, files=None):
 
     document, buffer = create_document()
 
     story = []
+
+    add_template_photo(story, form, files, "software")
 
     title = styles["Title"]
     title.textColor = COLORS["blue"]
@@ -1267,11 +1432,13 @@ def software_template(form):
 # DATA SCIENCE / AI TEMPLATE
 # =====================================================
 
-def data_science_template(form):
+def data_science_template(form, files=None):
 
     document, buffer = create_document()
 
     story = []
+
+    add_template_photo(story, form, files, "datascience")
 
     title = styles["Title"]
     title.textColor = COLORS["purple"]
@@ -1377,11 +1544,13 @@ def data_science_template(form):
 # CYBER SECURITY TEMPLATE
 # =====================================================
 
-def cyber_template(form):
+def cyber_template(form, files=None):
 
     document, buffer = create_document()
 
     story = []
+
+    add_template_photo(story, form, files, "cyber")
 
     title = styles["Title"]
     title.textColor = COLORS["orange"]
@@ -1493,46 +1662,46 @@ def cyber_template(form):
 # GENERATE RESUME
 # =====================================================
 
-def generate_resume(form):
+def generate_resume(form, files=None):
 
     template = form.get("template_style", "ats")
 
     if template == "modern_blue":
-        return modern_blue_template(form)
+        return modern_blue_template(form, files)
 
     elif template == "professional_black":
-        return professional_black_template(form)
+        return professional_black_template(form, files)
 
     elif template == "minimal":
-        return minimal_clean_template(form)
+        return minimal_clean_template(form, files)
 
     elif template == "executive":
-        return executive_template(form)
+        return executive_template(form, files)
 
     elif template == "creative":
-        return creative_template(form)
+        return creative_template(form, files)
 
     elif template == "ats":
-        return ats_template(form)
+        return ats_template(form, files)
 
     elif template == "fresher":
-        return fresher_template(form)
+        return fresher_template(form, files)
 
     elif template == "student":
-        return student_template(form)
+        return student_template(form, files)
 
     elif template == "experienced":
-        return experienced_template(form)
+        return experienced_template(form, files)
 
     elif template == "software":
-        return software_template(form)
+        return software_template(form, files)
 
     elif template == "datascience":
-        return data_science_template(form)
+        return data_science_template(form, files)
 
     elif template == "cyber":
-        return cyber_template(form)
+        return cyber_template(form, files)
 
     else:
-        return ats_template(form)
+        return ats_template(form, files)
         

@@ -538,4 +538,89 @@ if (titleInputForPreview) {
 
 updatePreviewTemplateStyle();
 
+
+    /* AI RESUME REWRITER */
+    const rewriteButtons = document.querySelectorAll(".rewrite-btn");
+    const rewriteOutput = document.getElementById("rewrite-output");
+    const rewriteContent = document.getElementById("rewrite-output-content");
+    const rewriteTitle = document.getElementById("rewrite-output-title");
+    const copyRewriteBtn = document.getElementById("copy-rewrite-btn");
+
+    const rewriteTitles = {
+        summary: "Improved Professional Summary",
+        experience: "Improved Experience",
+        projects: "Improved Projects",
+        skills: "Improved Skills",
+        education: "Improved Education",
+        full: "Rewritten Resume"
+    };
+
+    rewriteButtons.forEach(button => {
+        button.addEventListener("click", async () => {
+            const sectionType = button.dataset.section;
+            const resumeText = document.getElementById("rewrite-resume-text")?.value || "";
+            const jobRole = document.getElementById("rewrite-job-role")?.value || "";
+
+            if (!resumeText.trim()) {
+                alert("Resume text not found. Please analyze a resume first.");
+                return;
+            }
+
+            const originalText = button.innerHTML;
+            button.disabled = true;
+            button.innerHTML = "⏳ Rewriting...";
+
+            if (rewriteOutput && rewriteContent && rewriteTitle) {
+                rewriteOutput.style.display = "block";
+                rewriteTitle.textContent = rewriteTitles[sectionType] || "Rewritten Output";
+                rewriteContent.textContent = "Generating improved content with Gemini...";
+                rewriteOutput.scrollIntoView({ behavior: "smooth", block: "center" });
+            }
+
+            try {
+                const response = await fetch("/rewrite-section", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        section_type: sectionType,
+                        resume_text: resumeText,
+                        job_role: jobRole
+                    })
+                });
+
+                const data = await response.json();
+
+                if (!data.success) {
+                    throw new Error(data.error || "Rewrite failed.");
+                }
+
+                if (rewriteContent) {
+                    rewriteContent.textContent = data.rewritten;
+                }
+
+            } catch (error) {
+                if (rewriteContent) {
+                    rewriteContent.textContent = "Error: " + error.message;
+                }
+            } finally {
+                button.disabled = false;
+                button.innerHTML = originalText;
+            }
+        });
+    });
+
+    if (copyRewriteBtn && rewriteContent) {
+        copyRewriteBtn.addEventListener("click", async () => {
+            try {
+                await navigator.clipboard.writeText(rewriteContent.textContent);
+                copyRewriteBtn.textContent = "Copied!";
+                setTimeout(() => copyRewriteBtn.textContent = "Copy", 1500);
+            } catch (error) {
+                alert("Copy failed. Please select and copy manually.");
+            }
+        });
+    }
+
 });

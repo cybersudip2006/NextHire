@@ -1,26 +1,39 @@
 {% extends "base.html" %}
+{% block title %}AI Resume Suggestions | NextHire{% endblock %}
+
 {% block content %}
-<div class="container">
-    <h2 style="text-align: center; color: var(--primary);">AI Resume Suggestions</h2>
-    <p style="text-align: center; color: #666; margin-bottom: 2rem;">Paste your resume text below to get concise, actionable improvements.</p>
-    
-    <form method="POST">
-        <div class="form-group">
-            <textarea name="resume_text" rows="10" placeholder="Paste your professional summary, experience, or project details here..." required></textarea>
-        </div>
-        <div style="text-align: center;">
-            <button type="submit" class="btn">Get AI Feedback</button>
-        </div>
-    </form>
+<div class="ai-page">
+    <h2 style="text-align:center;color:var(--primary);">AI Resume Suggestions</h2>
+    <p style="text-align:center;color:#64748b;margin-bottom:30px;">
+        Paste your resume text and get detailed Gemini-powered improvements.
+    </p>
+
+    <div class="ai-card">
+        <form method="POST">
+            <div class="form-group">
+                <label>Resume Text</label>
+                <textarea name="resume_text" rows="12" placeholder="Paste your professional summary, experience, projects, skills, or complete resume text here..." required></textarea>
+            </div>
+
+            <div style="text-align:center;margin-top:22px;">
+                <button type="submit" class="btn">✨ Get AI Feedback</button>
+            </div>
+        </form>
+    </div>
 
     {% if suggestions %}
     <div class="results-card">
-        <h3 style="margin-top: 0;">Actionable Insights</h3>
-        <div style="white-space: pre-wrap; line-height: 1.8; font-size: 1rem;">
-            {% for item in suggestions %}
-                {{ item }}<br>
-            {% endfor %}
-        </div>
+        <h3 style="color:var(--primary);margin-bottom:15px;">Actionable Insights</h3>
+
+        {% for item in suggestions %}
+            {% if item.startswith('#') %}
+                <h3 style="margin-top:22px;color:var(--secondary);">{{ item.replace('#','') }}</h3>
+            {% else %}
+                <div class="suggestion-item">
+                    {{ item }}
+                </div>
+            {% endif %}
+        {% endfor %}
     </div>
     {% endif %}
 </div>
